@@ -325,10 +325,10 @@ static const struct mtk_composite top_muxes[] = {
 	    ulposc_axi_ck_mux_pre_parents, 0x0040, 3, 1),
 	MUX(CLK_TOP_MUX_ULPOSC_AXI_CK_MUX, "ulposc_axi_ck_mux",
 	    ulposc_axi_ck_mux_parents, 0x0040, 2, 1),
-	MUX(CLK_TOP_MUX_AXI, "axi_sel", axi_parents,
-	    0x0040, 0, 2),
+	MUX_FLAGS(CLK_TOP_MUX_AXI, "axi_sel", axi_parents,
+	    0x0040, 0, 2, CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
 	MUX_FLAGS(CLK_TOP_MUX_DDRPHYCFG, "ddrphycfg_sel", ddrphycfg_parents,
-		  0x0040, 16, 2, CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
+	    0x0040, 16, 2, CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
 	MUX(CLK_TOP_MUX_MM, "mm_sel", mm_parents,
 	    0x0040, 24, 2),
 	MUX_GATE(CLK_TOP_MUX_PWM, "pwm_sel", pwm_parents, 0x0050, 0, 3, 7),
@@ -602,6 +602,8 @@ static int mtk_infrasys_init(struct platform_device *pdev)
 	r = of_clk_add_provider(node, of_clk_src_onecell_get, infra_clk_data);
 	if (r)
 		return r;
+
+	mtk_register_reset_controller(node, 3, 0x120);
 
 	return 0;
 }

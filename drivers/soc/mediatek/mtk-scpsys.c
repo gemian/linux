@@ -89,6 +89,7 @@ enum clk_id {
 	CLK_HIFSEL,
 	CLK_JPGDEC,
 	CLK_AUDIO,
+	CLK_MJC,
 	CLK_MAX,
 };
 
@@ -103,6 +104,7 @@ static const char * const clk_names[] = {
 	"hif_sel",
 	"jpgdec",
 	"audio",
+	"mjc",
 	NULL,
 };
 
@@ -470,6 +472,9 @@ static struct scp *init_scp(struct platform_device *pdev,
 		struct scp_domain *scpd = &scp->domains[i];
 		const struct scp_domain_data *data = &scp_domain_data[i];
 
+		if (!data->name)
+			continue;
+
 		scpd->supply = devm_regulator_get_optional(&pdev->dev, data->name);
 		if (IS_ERR(scpd->supply)) {
 			if (PTR_ERR(scpd->supply) == -ENODEV)
@@ -487,6 +492,9 @@ static struct scp *init_scp(struct platform_device *pdev,
 		struct scp_domain *scpd = &scp->domains[i];
 		struct generic_pm_domain *genpd = &scpd->genpd;
 		const struct scp_domain_data *data = &scp_domain_data[i];
+
+		if (!data->name)
+			continue;
 
 		pd_data->domains[i] = genpd;
 		scpd->scp = scp;
@@ -524,6 +532,9 @@ static void mtk_register_power_domains(struct platform_device *pdev,
 	for (i = 0; i < num; i++) {
 		struct scp_domain *scpd = &scp->domains[i];
 		struct generic_pm_domain *genpd = &scpd->genpd;
+
+		if (!genpd->name)
+			continue;
 
 		/*
 		 * Initially turn on all domains to make the domains usable
@@ -760,7 +771,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
 		.ctl_offs = 0x300,
 		.sram_pdn_bits = GENMASK(8, 8),
 		.sram_pdn_ack_bits = GENMASK(12, 12),
-		.clk_id = {CLK_VDEC},
+		.clk_id = {CLK_MM, CLK_VDEC},
 	},
 	[MT6797_POWER_DOMAIN_VENC] = {
 		.name = "venc",
@@ -768,7 +779,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
 		.ctl_offs = 0x304,
 		.sram_pdn_bits = GENMASK(11, 8),
 		.sram_pdn_ack_bits = GENMASK(15, 12),
-		.clk_id = {CLK_NONE},
+		.clk_id = {CLK_MM, CLK_VENC},
 	},
 	[MT6797_POWER_DOMAIN_ISP] = {
 		.name = "isp",
@@ -776,7 +787,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
 		.ctl_offs = 0x308,
 		.sram_pdn_bits = GENMASK(9, 8),
 		.sram_pdn_ack_bits = GENMASK(13, 12),
-		.clk_id = {CLK_NONE},
+		.clk_id = {CLK_MM},
 	},
 	[MT6797_POWER_DOMAIN_MM] = {
 		.name = "mm",
@@ -793,7 +804,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
 		.ctl_offs = 0x314,
 		.sram_pdn_bits = GENMASK(11, 8),
 		.sram_pdn_ack_bits = GENMASK(15, 12),
-		.clk_id = {CLK_NONE},
+		.clk_id = {CLK_AUDIO},
 	},
 	[MT6797_POWER_DOMAIN_MFG_ASYNC] = {
 		.name = "mfg_async",
@@ -809,7 +820,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
 		.ctl_offs = 0x310,
 		.sram_pdn_bits = GENMASK(8, 8),
 		.sram_pdn_ack_bits = GENMASK(12, 12),
-		.clk_id = {CLK_NONE},
+		.clk_id = {CLK_MJC},
 	},
 };
 
