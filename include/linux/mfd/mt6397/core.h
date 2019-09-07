@@ -11,6 +11,7 @@
 
 enum chip_id {
 	MT6323_CHIP_ID = 0x23,
+	MT6351_CHIP_ID = 0x51,
 	MT6391_CHIP_ID = 0x91,
 	MT6397_CHIP_ID = 0x97,
 };

@@ -13,8 +13,10 @@
 #include <linux/mfd/core.h>
 #include <linux/mfd/mt6323/core.h>
 #include <linux/mfd/mt6397/core.h>
+#include <linux/mfd/mt6351/core.h>
 #include <linux/mfd/mt6323/registers.h>
 #include <linux/mfd/mt6397/registers.h>
+#include <linux/mfd/mt6351/registers.h>
 
 #define MT6323_RTC_BASE		0x8000
 #define MT6323_RTC_SIZE		0x40
@@ -71,6 +73,13 @@ static const struct mfd_cell mt6323_devs[] = {
 		.num_resources = ARRAY_SIZE(mt6323_pwrc_resources),
 		.resources = mt6323_pwrc_resources,
 		.of_compatible = "mediatek,mt6323-pwrc"
+	},
+};
+
+static const struct mfd_cell mt6351_devs[] = {
+	{
+		.name = "mt6351-regulator",
+		.of_compatible = "mediatek,mt6351-regulator"
 	},
 };
 
@@ -194,6 +203,13 @@ static int mt6397_probe(struct platform_device *pdev)
 					   NULL, 0, pmic->irq_domain);
 		break;
 
+	case MT6351_CHIP_ID:
+		ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
+					   mt6351_devs, ARRAY_SIZE(mt6351_devs),
+					   NULL, 0, pmic->irq_gomain);
+		dev_err(&pdev->dev, "supported chip: %d\n", ret);
+		break;
+
 	case MT6391_CHIP_ID:
 	case MT6397_CHIP_ID:
 		ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
@@ -218,6 +234,8 @@ static const struct of_device_id mt6397_of_match[] = {
 	{
 		.compatible = "mediatek,mt6323",
 		.data = &mt6323_core,
+	}, {
+		.compatible = "mediatek,mt6351",
 	}, {
 		.compatible = "mediatek,mt6397",
 		.data = &mt6397_core,

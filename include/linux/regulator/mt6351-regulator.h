@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) 2017 MediaTek Inc.
+ * Author: Jimmy-Yj Huang <jimmy-yj.huang@mediatek.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef __LINUX_REGULATOR_MT6351_H
+#define __LINUX_REGULATOR_MT6351_H
+
+enum {
+	MT6351_ID_VCORE = 0,
+	MT6351_ID_VGPU,
+	MT6351_ID_VMODEM,
+	MT6351_ID_VMD1,
+	MT6351_ID_VSRAM_MD,
+	MT6351_ID_VS1,
+	MT6351_ID_VS2,
+	MT6351_ID_VPA,
+	MT6351_ID_VSRAM_PROC,
+	MT6351_ID_VA18 = 9,
+	MT6351_ID_VTCXO24,
+	MT6351_ID_VTCXO28,
+	MT6351_ID_VCN28,
+	MT6351_ID_VCAMA,
+	MT6351_ID_VUSB33,
+	MT6351_ID_VSIM1,
+	MT6351_ID_VSIM2,
+	MT6351_ID_VEMC_3V3,
+	MT6351_ID_VMCH,
+	MT6351_ID_VIO28,
+	MT6351_ID_VIBR,
+	MT6351_ID_VCAMD,
+	MT6351_ID_VRF18,
+	MT6351_ID_VIO18,
+	MT6351_ID_VCN18,
+	MT6351_ID_VCAMIO,
+	MT6351_ID_VXO22,
+	MT6351_ID_VRF12,
+	MT6351_ID_VA10,
+	MT6351_ID_VDRAM,
+	MT6351_ID_VMIPI,
+	MT6351_ID_VGP3,
+	MT6351_ID_VBIF28,
+	MT6351_ID_VEFUSE,
+	MT6351_ID_VCN33_BT,
+	MT6351_ID_VCN33_WIFI,
+	MT6351_ID_VLDO28,
+	MT6351_ID_VMC,
+	MT6351_ID_VLDO28_0,
+	MT6351_ID_VLDO28_1,
+	MT6351_ID_RG_MAX,
+};
+
+#define MT6351_MAX_REGULATOR	MT6351_ID_RG_MAX
+#define MT6351_REGULATOR_ID12	0x20
+#define MT6351_REGULATOR_ID14	0x40
+
+#endif /* __LINUX_REGULATOR_MT6351_H */

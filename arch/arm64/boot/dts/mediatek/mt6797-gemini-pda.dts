@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
 
-// This file will be copied to arch/arm64/boot/dts/gemini.dts by buildroot,
-// so the include path must be relative to that.
 #include "mt6797.dtsi"
+#include "mt6351.dtsi"
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/power/mt6797-power.h>
 #include <dt-bindings/reset/mt6797-resets.h>
@@ -41,6 +40,7 @@
 			compatible = "mediatek,mt6351";
 		};
 	};
+
 
 	soc {
 		compatible = "simple-bus";
