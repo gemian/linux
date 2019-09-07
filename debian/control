@@ -1,0 +1,29 @@
+Source: gemian-linux-kernel-5.3
+Section: kernel
+Priority: extra
+Maintainer: Adam Boardman <adamboardman@gmail.com>
+Build-Depends:
+ python,
+ git,
+ ca-certificates,
+ bc,
+ curl,
+ device-tree-compiler,
+ flex,
+ bison
+Standards-Version: 3.9.8
+Vcs-Git: https://github.com/gemian/gemian-linux-kernel-5.3.git
+Homepage: https://www.kernel.org/
+
+Package: gemian-linux-kernel-5.3
+Architecture: any
+Multi-Arch: same
+Depends:
+ mkbootimg,
+ initramfs-tools-halium,
+Conflicts: gemini-kernel-image-3.18
+Replaces: gemini-kernel-image-3.18
+Recommends:
+Description: Gemian Kernel
+ .
+

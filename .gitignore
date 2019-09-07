@@ -67,10 +67,12 @@ modules.order
 #
 /*.spec
 
+
 #
-# Debian directory (make deb-pkg)
+# Debian
 #
-/debian/
+/debian/tmp/
+/debian/files
 
 #
 # Snap directory (make snap-pkg)
