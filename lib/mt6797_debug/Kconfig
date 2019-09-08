@@ -1,0 +1,18 @@
+menu "MT6797 SOC Debugging"
+
+config MT6797_DEBUG
+	bool "MT6797 debug"
+	---help---
+		Kernel module to debug MT6797 hardware.
+
+config MT6797_DEBUG_FORCE_UART
+	bool "Force USB UART (Not required on Gemini PDA)"
+	depends on MT6797_DEBUG
+	---help---
+		Forces the USB controller to UART mode. This is only required
+		on platforms where the bootloader does not detect UART on the
+		USB port. This is not needed on the Gemini PDA and should not
+		be used.
+
+endmenu
+

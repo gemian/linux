@@ -783,6 +783,8 @@ config DEBUG_STACKOVERFLOW
 
 source "lib/Kconfig.kasan"
 
+source "lib/mt6797_debug/Kconfig"
+
 endmenu # "Memory Debugging"
 
 config DEBUG_SHIRQ
