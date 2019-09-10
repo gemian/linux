@@ -913,7 +913,7 @@ int mtk_paris_pinctrl_probe(struct platform_device *pdev,
 	err = mtk_build_eint(hw, pdev);
 	if (err)
 		dev_warn(&pdev->dev,
-			 "Failed to add EINT, but pinctrl still can work\n");
+			 "Failed to add EINT, but pinctrl still can work (%d)\n",err);
 
 	/* Build gpiochip should be after pinctrl_enable is done */
 	err = mtk_build_gpiochip(hw, pdev->dev.of_node);

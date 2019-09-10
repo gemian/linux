@@ -163,6 +163,17 @@ config INPUT_PM8XXX_VIBRATOR
 	  To compile this driver as module, choose M here: the
 	  module will be called pm8xxx-vibrator.
 
+config INPUT_MTK_VIBRATOR
+    tristate "MediaTek Vibrator driver"
+    depends on ANDROID_TIMED_OUTPUT
+    default n
+	---help---
+	Vibrator driver support for MediaTek SOC.
+	You can customize the vibrate strength and lowest vibrate time.
+	If you want to use MediaTek Vibrator driver, say Y or M here.
+	If unsure, say N.
+
+
 config INPUT_PMIC8XXX_PWRKEY
 	tristate "PMIC8XXX power key support"
 	depends on MFD_PM8XXX

@@ -391,6 +391,8 @@ static int mt6351_set_buck_vosel_reg(struct platform_device *pdev) {
 static int mt6351_regulator_probe(struct platform_device *pdev) {
     const struct of_device_id *of_id;
     struct mt6397_chip *mt6351 = dev_get_drvdata(pdev->dev.parent);
+    struct mt6351_regulator_info *mt_regulators;
+    struct mt_regulator_init_data *regulator_init_data;
     struct regulator_config config = {};
     struct regulator_dev *rdev;
     int i;

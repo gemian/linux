@@ -2,8 +2,9 @@
 
 ccflags-$(MT6797_DEBUG_FORCE_UART) += -DMT6797_DEBUG_FORCE_UART=1
 
-obj-$(MT6797_DEBUG) = mt6797_debug.o
-mt6797_debug-objs = main.o regdump.o
+obj-$(MT6797_DEBUG) += mt6797_debug.o
+mt6797_debug-objs := main.o
+mt6797_debug-objs += regdump.o
 mt6797_debug-objs += debug_bus_protect_regs.o
 mt6797_debug-objs += debug_gpio_regs.o
 mt6797_debug-objs += debug_gpuldo_regs.o

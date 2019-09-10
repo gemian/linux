@@ -859,6 +859,7 @@ config MFD_MAX8998
 
 config MFD_MT6397
 	tristate "MediaTek MT6397 PMIC Support"
+	depends on MTK_PMIC_WRAP
 	select MFD_CORE
 	select IRQ_DOMAIN
 	help

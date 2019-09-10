@@ -27,6 +27,14 @@
 #define MT6323_PWRC_BASE	0x8000
 #define MT6323_PWRC_SIZE	0x40
 
+#define PMIC_DEBUG_PR_DBG
+
+#if defined PMIC_DEBUG_PR_DBG
+#define PMICLOG(fmt, arg...)   pr_err(fmt, ##arg)
+#else
+#define PMICLOG(fmt, arg...)
+#endif
+
 static const struct resource mt6323_rtc_resources[] = {
 	DEFINE_RES_MEM(MT6323_RTC_BASE, MT6323_RTC_SIZE),
 	DEFINE_RES_IRQ(MT6323_IRQ_STATUS_RTC),
@@ -138,20 +146,101 @@ static int mt6397_irq_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(mt6397_pm_ops, mt6397_irq_suspend,
 			mt6397_irq_resume);
 
-struct chip_data {
-	u32 cid_addr;
-	u32 cid_shift;
-};
 
-static const struct chip_data mt6323_core = {
-	.cid_addr = MT6323_CID,
-	.cid_shift = 0,
-};
+/**********************************************************
+ * PMIC read/write APIs
+ ***********************************************************/
+static DEFINE_MUTEX(pmic_access_mutex);
+static DEFINE_MUTEX(pmic_hk_mutex);
 
-static const struct chip_data mt6397_core = {
-	.cid_addr = MT6397_CID,
-	.cid_shift = 0,
-};
+static unsigned int pmic_read_device(unsigned int RegNum,
+                                     unsigned int *val,
+                                     unsigned int MASK,
+                                     unsigned int SHIFT)
+{
+	unsigned int return_value = 0;
+
+	unsigned int pmic_reg = 0;
+	unsigned int rdata;
+
+	return_value = pwrap_read((RegNum), &rdata);
+	pmic_reg = rdata;
+	if (return_value != 0) {
+		pr_err("[%s] err ret=%d, Reg[0x%x] pmic_wrap read data fail, MASK=0x%x, SHIFT=%d\n",
+			 __func__, return_value, RegNum, MASK, SHIFT);
+		return return_value;
+	}
+
+	pmic_reg &= (MASK << SHIFT);
+	*val = (pmic_reg >> SHIFT);
+	PMICLOG("[%s] (0x%x,0x%x,0x%x,0x%x)\n", __func__, RegNum, *val, MASK, SHIFT);
+
+	return return_value;
+}
+
+static unsigned int pmic_write_device(unsigned int RegNum,
+                                      unsigned int val,
+                                      unsigned int MASK,
+                                      unsigned int SHIFT)
+{
+	unsigned int return_value = 0;
+	unsigned int pmic_reg = 0;
+	unsigned int rdata;
+
+	return_value = pwrap_read((RegNum), &rdata);
+	pmic_reg = rdata;
+	if (return_value != 0) {
+		pr_err("[%s] err ret=%d, Reg[0x%x] pmic_wrap read data fail, val=0x%x, MASK=0x%x, SHIFT=%d\n",
+			 __func__, return_value, RegNum, val, MASK, SHIFT);
+		return return_value;
+	}
+
+	pmic_reg &= ~(MASK << SHIFT);
+	pmic_reg |= (val << SHIFT);
+
+	PMICLOG("[%s] (0x%x,0x%x,0x%x,0x%x,0x%x)\n", __func__, RegNum, val, MASK, SHIFT, pmic_reg);
+
+	return_value = pwrap_write((RegNum), pmic_reg);
+	if (return_value != 0) {
+		pr_err("[%s] err ret=%d, Reg[0x%x]=0x%x pmic_wrap write data fail, val=0x%x, MASK=0x%x, SHIFT=%d\n",
+			 __func__, return_value, RegNum, pmic_reg, val, MASK, SHIFT);
+		return return_value;
+	}
+
+	return return_value;
+}
+
+unsigned int pmic_read_interface(unsigned int RegNum, unsigned int *val, unsigned int MASK, unsigned int SHIFT)
+{
+	return pmic_read_device(RegNum, val, MASK, SHIFT);
+}
+
+unsigned int pmic_config_interface(unsigned int RegNum, unsigned int val, unsigned int MASK, unsigned int SHIFT)
+{
+	unsigned int return_value = 0;
+
+	if (preempt_count() > 0 || irqs_disabled() || system_state != SYSTEM_RUNNING || oops_in_progress)
+		return pmic_config_interface_nolock(RegNum, val, MASK, SHIFT);
+	mutex_lock(&pmic_access_mutex);
+	return_value = pmic_write_device(RegNum, val, MASK, SHIFT);
+	mutex_unlock(&pmic_access_mutex);
+
+	return return_value;
+}
+
+unsigned int pmic_read_interface_nolock(unsigned int RegNum, unsigned int *val, unsigned int MASK, unsigned int SHIFT)
+{
+	return pmic_read_device(RegNum, val, MASK, SHIFT);
+}
+
+unsigned int pmic_config_interface_nolock(unsigned int RegNum, unsigned int val, unsigned int MASK, unsigned int SHIFT)
+{
+	return pmic_write_device(RegNum, val, MASK, SHIFT);
+}
+
+/*****************************************************************************
+ * system function
+ ******************************************************************************/
 
 static int mt6397_probe(struct platform_device *pdev)
 {

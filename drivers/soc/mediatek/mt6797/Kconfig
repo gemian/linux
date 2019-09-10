@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+if MTK_PMIC_WRAP
+
+config MTK_PMIC_WRAP_MT6797
+	bool "MediaTek PMIC Wrapper Support MT6797"
+	default n
+	help
+      Say yes here for MT6797 hardware support.
+
+endif # MTK_PMIC_WRAP
