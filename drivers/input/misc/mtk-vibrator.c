@@ -14,7 +14,7 @@
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
-#include <linux/mfd/mt-pmic-common.h>
+#include <linux/regmap.h>
 #include <linux/mfd/mt6351/registers.h>
 
 #include "timed_output.h"
@@ -86,6 +86,7 @@ struct vibrator_hw {
     u32 vib_limit;
     u32 vib_vol;
     const struct mtk_vibr_data *data;
+    struct regmap *regmap;
 };
 
 static const struct mtk_vibr_data mt6351_vibr_data = {
@@ -127,10 +128,8 @@ struct vibrator_hw *get_cust_vibrator_dtsi(void)
 void vibr_set_value(unsigned int value)
 {
 	struct vibrator_hw *hw = get_cust_vibrator_dtsi();
-	unsigned int ret = pmic_config_interface(hw->data->en_addr, value, hw->data->en_mask, hw->data->en_shift);
-	if (ret) {
-		VIB_DEBUG("%s fail %d\n", __func__, ret);
-	}
+	regmap_update_bits(hw->regmap, hw->data->en_addr,
+		hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
 }
 
 //void init_vibr_oc_handler(void (*vibr_oc_func)(void))
@@ -171,20 +170,22 @@ void init_cust_vibrator_dtsi(struct platform_device *pdev)
 		pvib_cust->data = (struct mtk_vibr_data*)of_device_get_match_data(&pdev->dev);
 
 		VIB_DEBUG("pvib_cust = %d, %d, %d\n", pvib_cust->vib_timer, pvib_cust->vib_limit, pvib_cust->vib_vol);
+
+		pvib_cust->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+		if (!pvib_cust->regmap)
+			VIB_DEBUG("Failed to get a regmap\n");
+
 	}
 }
 
 void vibr_power_set(const struct platform_device *pdev)
 {
-    unsigned int ret;
-    struct vibrator_hw *hw = get_cust_vibrator_dtsi();
+	struct vibrator_hw *hw = get_cust_vibrator_dtsi();
 
 	if (hw != NULL) {
 		VIB_DEBUG("vibr_init: vibrator set voltage = %d\n", hw->vib_vol);
-        ret = pmic_config_interface(hw->data->volsel_addr, (unsigned int) hw->vib_vol, hw->data->volsel_mask, hw->data->volsel_shift);
-        if (ret) {
-            VIB_DEBUG("%s fail %d\n", __func__, ret);
-        }
+		regmap_update_bits(hw->regmap, hw->data->volsel_addr,
+			hw->data->volsel_mask << hw->data->volsel_shift, (unsigned int) hw->vib_vol << hw->data->volsel_shift);
     } else {
 		VIB_DEBUG("vibr_init: can not get vibrator settings from dtsi!\n");
 	}
