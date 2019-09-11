@@ -167,8 +167,10 @@ static int mt6397_probe(struct platform_device *pdev)
 	 * Regmap is set from its parent.
 	 */
 	pmic->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-	if (!pmic->regmap)
+	if (!pmic->regmap) {
+		dev_err(pmic->dev, "Failed to get regmap, parent: %s\n", dev_name(pdev->dev.parent));
 		return -ENODEV;
+	}
 
 	pmic_core = of_device_get_match_data(&pdev->dev);
 	if (!pmic_core)

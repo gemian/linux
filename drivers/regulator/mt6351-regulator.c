@@ -339,8 +339,7 @@ static const struct platform_device_id mt6351_platform_ids[] = {
         {"mt6351-regulator", 0},
         { /* sentinel */ },
 };
-MODULE_DEVICE_TABLE(platform, mt6351_platform_ids
-);
+MODULE_DEVICE_TABLE(platform, mt6351_platform_ids);
 
 static const struct of_device_id mt6351_of_match[] = {
         {
@@ -351,8 +350,7 @@ static const struct of_device_id mt6351_of_match[] = {
                 /* sentinel */
         }
 };
-MODULE_DEVICE_TABLE(of, mt6351_of_match
-);
+MODULE_DEVICE_TABLE(of, mt6351_of_match);
 
 static int mt6351_set_buck_vosel_reg(struct platform_device *pdev) {
     const struct of_device_id *of_id;
@@ -363,9 +361,10 @@ static int mt6351_set_buck_vosel_reg(struct platform_device *pdev) {
     u32 regval, reg;
 
     of_id = of_match_device(mt6351_of_match, &pdev->dev);
-    if (!of_id || !of_id->data)
+    if (!of_id || !of_id->data) {
+        dev_err(&pdev->dev, "Failed to match volsel reg\n");
         return -ENODEV;
-
+    }
     regulator_init_data = (struct mt_regulator_init_data *) of_id->data;
     mt_regulators = regulator_init_data->regulator_info;
 
@@ -373,8 +372,7 @@ static int mt6351_set_buck_vosel_reg(struct platform_device *pdev) {
         if ((mt_regulators + i)->vselctrl_reg) {
             reg = (mt_regulators + i)->vselctrl_reg;
             if (regmap_read(mt6351->regmap, reg, &regval) < 0) {
-                dev_err(&pdev->dev,
-                        "Failed to read buck ctrl\n");
+                dev_err(&pdev->dev, "Failed to read buck ctrl\n");
                 return -EIO;
             }
 
@@ -399,15 +397,19 @@ static int mt6351_regulator_probe(struct platform_device *pdev) {
     u32 reg_value, version;
 
     of_id = of_match_device(mt6351_of_match, &pdev->dev);
-    if (!of_id || !of_id->data)
+    if (!of_id || !of_id->data) {
+        dev_err(&pdev->dev, "Failed to match regulator probe, parent: %s\n", dev_name(pdev->dev.parent));
         return -ENODEV;
+    }
 
     regulator_init_data = (struct mt_regulator_init_data *) of_id->data;
     mt_regulators = regulator_init_data->regulator_info;
 
     /* Query buck controller to select activated voltage register part */
-    if (mt6351_set_buck_vosel_reg(pdev))
+    if (mt6351_set_buck_vosel_reg(pdev)) {
+        dev_err(&pdev->dev, "Failed to set bug vosel\n");
         return -EIO;
+    }
 
     /* Read PMIC chip revision to update constraints and voltage table */
     if (regmap_read(mt6351->regmap, MT6351_HWCID, &reg_value) < 0) {

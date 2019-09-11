@@ -328,7 +328,7 @@ pmic {
 
 	};
 
-	vibrator0:vibrator@0 {
+	vibrator@0 {
 		compatible = "mediatek,mt6351-vibrator";
 		vib_timer = <25>;
 		vib_limit = <9>;
