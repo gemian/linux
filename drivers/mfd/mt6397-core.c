@@ -88,6 +88,9 @@ static const struct mfd_cell mt6351_devs[] = {
 	{
 		.name = "mt6351-regulator",
 		.of_compatible = "mediatek,mt6351-regulator"
+	}, {
+		.name = "mt6351-vibrator",
+		.of_compatible = "mediatek,mt6351-vibrator",
 	},
 };
 

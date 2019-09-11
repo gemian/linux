@@ -16,6 +16,7 @@
 #include <linux/delay.h>
 #include <linux/regmap.h>
 #include <linux/mfd/mt6351/registers.h>
+#include <linux/mfd/mt6397/core.h>
 
 #include "timed_output.h"
 
@@ -66,7 +67,7 @@ static int shutdown_flag;
 #if 1
 #define VIB_DEBUG(format, args...) \
 do {	\
-    pr_debug(format, ##args); \
+    pr_info(format, ##args); \
 } while (0)
 #else
 #define VIB_DEBUG(fmt, args...) do {} while (0)
@@ -128,6 +129,8 @@ struct vibrator_hw *get_cust_vibrator_dtsi(void)
 void vibr_set_value(unsigned int value)
 {
 	struct vibrator_hw *hw = get_cust_vibrator_dtsi();
+	VIB_DEBUG("[%s] regmap_update_bits(%p,%d,%d,%d)\n", __func__, hw->regmap, hw->data->en_addr,
+              hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
 	regmap_update_bits(hw->regmap, hw->data->en_addr,
 		hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
 }
@@ -141,53 +144,61 @@ void init_cust_vibrator_dtsi(struct platform_device *pdev)
 {
 	int ret;
 	const struct mtk_vibr_data *data;
+	struct mt6397_chip *pmic;
 
 	if (pvib_cust == NULL) {
 		pvib_cust = kmalloc(sizeof(struct vibrator_hw), GFP_KERNEL);
 		if (pvib_cust == NULL) {
-			VIB_DEBUG("%s kmalloc fail\n", __func__);
+			VIB_DEBUG("[%s] kmalloc fail\n", __func__);
 			return;
 		}
 		ret = of_property_read_u32(pdev->dev.of_node, "vib_timer", &(pvib_cust->vib_timer));
 		if (!ret)
-			VIB_DEBUG("The vibrator timer from dts is : %d\n", pvib_cust->vib_timer);
+			VIB_DEBUG("[%s] The vibrator timer from dts is : %d\n", __func__, pvib_cust->vib_timer);
 		else
 			pvib_cust->vib_timer = 25;
 
 		ret = of_property_read_u32(pdev->dev.of_node, "vib_limit", &(pvib_cust->vib_limit));
 		if (!ret)
-			VIB_DEBUG("The vibrator limit from dts is : %d\n", pvib_cust->vib_limit);
+			VIB_DEBUG("[%s] The vibrator limit from dts is : %d\n", __func__, pvib_cust->vib_limit);
 		else
 			pvib_cust->vib_limit = 9;
 
 		ret = of_property_read_u32(pdev->dev.of_node, "vib_vol", &(pvib_cust->vib_vol));
 		if (!ret)
-			VIB_DEBUG("The vibrator vol from dts is : %d\n", pvib_cust->vib_vol);
+			VIB_DEBUG("[%s] The vibrator vol from dts is : %d\n", __func__, pvib_cust->vib_vol);
 		else
 			pvib_cust->vib_vol = 0x05;
 
         data = (struct mtk_vibr_data*)of_device_get_match_data(&pdev->dev);
 		pvib_cust->data = (struct mtk_vibr_data*)of_device_get_match_data(&pdev->dev);
 
-		VIB_DEBUG("pvib_cust = %d, %d, %d\n", pvib_cust->vib_timer, pvib_cust->vib_limit, pvib_cust->vib_vol);
+		VIB_DEBUG("[%s] pvib_cust = %d, %d, %d\n", __func__, pvib_cust->vib_timer, pvib_cust->vib_limit, pvib_cust->vib_vol);
 
-		pvib_cust->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+		pmic = platform_get_drvdata(pdev);
+        if (!pmic)
+          VIB_DEBUG("[%s] Failed to get pmic\n", __func__);
+		pvib_cust->regmap = pmic->regmap;
 		if (!pvib_cust->regmap)
-			VIB_DEBUG("Failed to get a regmap\n");
+			VIB_DEBUG("[%s] Failed to get regmap\n", __func__);
 
 	}
 }
 
 void vibr_power_set(const struct platform_device *pdev)
 {
+	int error;
 	struct vibrator_hw *hw = get_cust_vibrator_dtsi();
 
 	if (hw != NULL) {
-		VIB_DEBUG("vibr_init: vibrator set voltage = %d\n", hw->vib_vol);
-		regmap_update_bits(hw->regmap, hw->data->volsel_addr,
+		VIB_DEBUG("[%s]: vibrator set voltage = %d\n", __func__, hw->vib_vol);
+		error = regmap_update_bits(hw->regmap, hw->data->volsel_addr,
 			hw->data->volsel_mask << hw->data->volsel_shift, (unsigned int) hw->vib_vol << hw->data->volsel_shift);
-    } else {
-		VIB_DEBUG("vibr_init: can not get vibrator settings from dtsi!\n");
+		if (error) {
+			VIB_DEBUG("[%s]: regmap_update_bits failed (%d)\n", __func__, error);
+		}
+	} else {
+		VIB_DEBUG("[%s]: can not get vibrator settings from dtsi!\n", __func__);
 	}
 }
 
