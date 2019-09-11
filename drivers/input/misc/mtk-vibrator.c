@@ -144,7 +144,8 @@ void init_cust_vibrator_dtsi(struct platform_device *pdev)
 {
 	int ret;
 	const struct mtk_vibr_data *data;
-	struct mt6397_chip *pmic;
+	struct regmap *rm = NULL;
+	struct device *parent = pdev->dev.parent;
 
 	if (pvib_cust == NULL) {
 		pvib_cust = kmalloc(sizeof(struct vibrator_hw), GFP_KERNEL);
@@ -175,10 +176,12 @@ void init_cust_vibrator_dtsi(struct platform_device *pdev)
 
 		VIB_DEBUG("[%s] pvib_cust = %d, %d, %d\n", __func__, pvib_cust->vib_timer, pvib_cust->vib_limit, pvib_cust->vib_vol);
 
-		pmic = platform_get_drvdata(pdev);
-        if (!pmic)
-          VIB_DEBUG("[%s] Failed to get pmic\n", __func__);
-		pvib_cust->regmap = pmic->regmap;
+		while (rm == NULL && parent != NULL) {
+			rm = dev_get_regmap(parent, NULL);
+			VIB_DEBUG("[%s] regmap %p\n", __func__, (unsigned long) rm);
+			parent = parent->parent;
+		}
+		pvib_cust->regmap = rm;
 		if (!pvib_cust->regmap)
 			VIB_DEBUG("[%s] Failed to get regmap\n", __func__);
 
