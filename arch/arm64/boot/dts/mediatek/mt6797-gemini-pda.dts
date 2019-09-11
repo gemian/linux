@@ -209,22 +209,6 @@
 		mediatek,reg_len_pol0 = <8>; // 8*32 irq polarity setting in INTPOL0
 	};
 
-	vibrator0:vibrator@0 {
-		compatible = "mediatek,mt6351-vibrator";
-		vib_timer = <25>;
-		vib_limit = <9>;
-
-		// RG_VIBR_VOSEL Output voltage select
-		// 0: 1.3V
-		// 1: 1.5V
-		// 2: 1.8V
-		// 3: 2.0V
-		// 4: 2.5V
-		// 5: 2.8V
-		// 6: 3.0V
-		// 7: 3.3V
-		vib_vol= <5>;
-	};
 };
 
 // clock-frequency must be specified for each CPU. If it is omitted, MediaTek's

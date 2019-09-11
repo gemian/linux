@@ -140,7 +140,7 @@ void vibr_set_value(unsigned int value)
 //	pmic_register_interrupt_callback(INT_VIBR_OC, vibr_oc_func);
 //}
 
-void init_cust_vibrator_dtsi(struct platform_device *pdev)
+int init_cust_vibrator_dtsi(struct platform_device *pdev)
 {
 	int ret;
 	const struct mtk_vibr_data *data;
@@ -151,7 +151,7 @@ void init_cust_vibrator_dtsi(struct platform_device *pdev)
 		pvib_cust = kmalloc(sizeof(struct vibrator_hw), GFP_KERNEL);
 		if (pvib_cust == NULL) {
 			VIB_DEBUG("[%s] kmalloc fail\n", __func__);
-			return;
+			return -ENOMEM;
 		}
 		ret = of_property_read_u32(pdev->dev.of_node, "vib_timer", &(pvib_cust->vib_timer));
 		if (!ret)
@@ -178,14 +178,17 @@ void init_cust_vibrator_dtsi(struct platform_device *pdev)
 
 		while (rm == NULL && parent != NULL) {
 			rm = dev_get_regmap(parent, NULL);
-			VIB_DEBUG("[%s] regmap %p\n", __func__, (unsigned long) rm);
+			VIB_DEBUG("[%s] name: %s regmap: %ld\n", __func__, dev_name(parent), (unsigned long) rm);
 			parent = parent->parent;
 		}
 		pvib_cust->regmap = rm;
-		if (!pvib_cust->regmap)
+		if (!pvib_cust->regmap) {
 			VIB_DEBUG("[%s] Failed to get regmap\n", __func__);
-
+			return -EINVAL;
+		}
 	}
+
+	return 0;
 }
 
 void vibr_power_set(const struct platform_device *pdev)
@@ -299,10 +302,13 @@ static struct timed_output_dev mtk_vibrator = {
 
 static int vib_probe(struct platform_device *pdev)
 {
+	int ret = 0;
 //	init_vibr_oc_handler(vibrator_oc_handler);
-	init_cust_vibrator_dtsi(pdev);
+	ret = init_cust_vibrator_dtsi(pdev);
+	if (ret)
+		return ret;
 	vibr_power_set(pdev);
-	return 0;
+	return ret;
 }
 
 static int vib_remove(struct platform_device *pdev)
