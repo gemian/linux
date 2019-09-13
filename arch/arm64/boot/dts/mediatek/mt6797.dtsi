@@ -172,6 +172,29 @@
 		infracfg = <&infrasys>;
 	};
 
+	eintc: eintc@1000b000 {
+		compatible = "mediatek,mt-eic";
+		reg = <0 0x1000b000 0 0x1000>;
+		interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
+		#interrupt-cells = <2>;
+		interrupt-controller;
+		mediatek,max_eint_num = <192>;
+		mediatek,max_deint_cnt = <4>;
+		mediatek,deint_possible_irq = <206 207 208 209>;
+		mediatek,mapping_table_entry = <0>;
+		mediatek,debtime_setting_entry = <10>;
+		mediatek,debtime_setting_array	= <0 128>,
+						<1 256>,
+						<2 512>,
+						<3 1024>,
+						<4 16384>,
+						<5 32768>,
+						<6 65536>,
+						<7 131072>,
+						<8 262144>,
+						<9 524288>;
+	};
+
 	watchdog: watchdog@10007000 {
 		compatible = "mediatek,mt6797-wdt", "mediatek,mt6589-wdt";
 		reg = <0 0x10007000 0 0x100>;
