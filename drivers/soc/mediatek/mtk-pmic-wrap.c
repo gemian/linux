@@ -1490,7 +1490,7 @@ static int pwrap_mt8135_init_soc_specific(struct pmic_wrapper *wrp)
 	/* enable PMIC event out and sources */
 	if (pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_EVENT_OUT_EN],
 			0x1) ||
-	    pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_EVENT_SRC_EN],
+		pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_EVENT_SRC_EN],
 			0xffff)) {
 		dev_err(wrp->dev, "enable dewrap fail\n");
 		return -EFAULT;
@@ -1920,7 +1920,7 @@ static int pwrap_probe(struct platform_device *pdev)
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pwrap");
 	wrp->base = devm_ioremap_resource(wrp->dev, res);
 	if (IS_ERR(wrp->base)) {
-        dev_err(wrp->dev, "cannot get pwrap\n");
+		dev_err(wrp->dev, "cannot get pwrap\n");
 		return PTR_ERR(wrp->base);
 	}
 
@@ -1962,12 +1962,15 @@ static int pwrap_probe(struct platform_device *pdev)
 	}
 
 	ret = clk_prepare_enable(wrp->clk_spi);
-	if (ret)
+	if (ret) {
+		dev_err(wrp->dev, "failed to prepare enable clk_spi");
 		return ret;
-
+	}
 	ret = clk_prepare_enable(wrp->clk_wrap);
-	if (ret)
+	if (ret) {
+		dev_err(wrp->dev, "failed to prepare enable clk_wrap");
 		goto err_out1;
+	}
 
 	/* Enable internal dynamic clock */
 	if (HAS_CAP(wrp->master->caps, PWRAP_CAP_DCM)) {
@@ -2016,18 +2019,22 @@ static int pwrap_probe(struct platform_device *pdev)
 	ret = devm_request_irq(wrp->dev, irq, pwrap_interrupt,
 			       IRQF_TRIGGER_HIGH,
 			       "mt-pmic-pwrap", wrp);
-	if (ret)
+	if (ret) {
+		dev_err(wrp->dev, "failed to request irq for mt-pmic-pwrap (%d)\n",
+			ret);
 		goto err_out2;
+	}
 
 	wrp->regmap = devm_regmap_init(wrp->dev, NULL, wrp, wrp->slave->regmap);
 	if (IS_ERR(wrp->regmap)) {
 		ret = PTR_ERR(wrp->regmap);
+		dev_err(wrp->dev, "failed to init regmap (%d)\n", ret);
 		goto err_out2;
 	}
 
 	ret = of_platform_populate(np, NULL, NULL, wrp->dev);
 	if (ret) {
-		dev_err(wrp->dev, "failed to create child devices at %pOF\n", np);
+		dev_err(wrp->dev, "failed to create child devices at %pOF (%d)\n", np, ret);
 		goto err_out2;
 	}
 

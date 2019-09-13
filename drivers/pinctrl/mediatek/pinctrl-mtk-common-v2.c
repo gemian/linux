@@ -316,29 +316,36 @@ int mtk_build_eint(struct mtk_pinctrl *hw, struct platform_device *pdev)
 	if (!IS_ENABLED(CONFIG_EINT_MTK))
 		return 0;
 
-	if (!of_property_read_bool(np, "interrupt-controller"))
+	if (!of_property_read_bool(np, "interrupt-controller")) {
+		dev_err(&pdev->dev, "Unable to read interrupt-controller - pc2\n");
 		return -ENODEV;
-
+	}
 	hw->eint = devm_kzalloc(hw->dev, sizeof(*hw->eint), GFP_KERNEL);
 	if (!hw->eint)
 		return -ENOMEM;
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "eint");
 	if (!res) {
-		dev_err(&pdev->dev, "Unable to get eint resource\n");
+		dev_err(&pdev->dev, "Unable to get eint resource by name - pc2\n");
 		return -ENODEV;
 	}
 
 	hw->eint->base = devm_ioremap_resource(&pdev->dev, res);
-	if (IS_ERR(hw->eint->base))
+	if (IS_ERR(hw->eint->base)) {
+		dev_err(&pdev->dev, "Unable to get ioremap resource - pc2\n");
 		return PTR_ERR(hw->eint->base);
+	}
 
 	hw->eint->irq = irq_of_parse_and_map(np, 0);
-	if (!hw->eint->irq)
+	if (!hw->eint->irq) {
+		dev_err(&pdev->dev, "Unable to get irq from parse and map - pc2\n");
 		return -EINVAL;
+	}
 
-	if (!hw->soc->eint_hw)
+	if (!hw->soc->eint_hw) {
+		dev_err(&pdev->dev, "no eint hw\n");
 		return -ENODEV;
+	}
 
 	hw->eint->dev = &pdev->dev;
 	hw->eint->hw = hw->soc->eint_hw;

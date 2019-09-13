@@ -983,20 +983,25 @@ static int mtk_eint_init(struct mtk_pinctrl *pctl, struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
 
-	if (!of_property_read_bool(np, "interrupt-controller"))
+	if (!of_property_read_bool(np, "interrupt-controller")) {
+		dev_err(&pdev->dev, "Unable to read interrupt-controller - pc1\n");
 		return -ENODEV;
-
+	}
 	pctl->eint = devm_kzalloc(pctl->dev, sizeof(*pctl->eint), GFP_KERNEL);
 	if (!pctl->eint)
 		return -ENOMEM;
 
 	pctl->eint->base = devm_platform_ioremap_resource(pdev, 0);
-	if (IS_ERR(pctl->eint->base))
+	if (IS_ERR(pctl->eint->base)) {
+		dev_err(&pdev->dev, "Unable to get ioremap resource - pc1\n");
 		return PTR_ERR(pctl->eint->base);
+	}
 
 	pctl->eint->irq = irq_of_parse_and_map(np, 0);
-	if (!pctl->eint->irq)
+	if (!pctl->eint->irq) {
+		dev_err(&pdev->dev, "Unable to get irq from parse and map - pc1\n");
 		return -EINVAL;
+	}
 
 	pctl->eint->dev = &pdev->dev;
 	/*
@@ -1102,6 +1107,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
 	ret = gpiochip_add_pin_range(pctl->chip, dev_name(&pdev->dev),
 			0, 0, pctl->devdata->npins);
 	if (ret) {
+		dev_err(&pdev->dev, "couldn't add gpio pin range in pinctrl driver\n");
 		ret = -EINVAL;
 		goto chip_error;
 	}
