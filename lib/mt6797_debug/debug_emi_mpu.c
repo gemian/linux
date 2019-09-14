@@ -5,6 +5,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/seq_file.h>
+#include "regdump.h"
 
 #define MTK_SIP_KERNEL_EMIMPU_READ 0x82000208
 
@@ -100,6 +101,7 @@ static const struct file_operations emi_mpu_debug_fops = {
 
 void __init mt6797_debug_emi_mpu_init(struct dentry *debug_dir)
 {
-	debugfs_create_file("emi_mpu", S_IFREG | S_IRUGO, debug_dir, NULL,
-		       &emi_mpu_debug_fops);
+	struct dentry *dir=debugfs_create_file("emi_mpu", S_IFREG | S_IRUGO,
+		debug_dir, NULL, &emi_mpu_debug_fops);
+	PRINT_IF_ERROR(dir);
 }

@@ -101,6 +101,9 @@ struct register_definition {
 	debugfs_create_file(#_reg, S_IFREG | S_IRUGO, _root,		\
 		(void*)_base, &_reg##_fops)
 
+#define PRINT_IF_ERROR(_val) \
+	if (IS_ERR(_val)) { pr_err("[%s] failed at line %d", __func__, __LINE__); }
+
 void print_register(struct seq_file *seq, void * base,
 	const struct register_definition * def);
 

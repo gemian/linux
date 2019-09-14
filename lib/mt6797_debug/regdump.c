@@ -16,7 +16,7 @@ static void print_field(struct seq_file *seq, u32 val,
 	u32 field_value = (val & mask) >> (field->shift % 32);
 
 	if (field->type == REGISTER_FIELD_BIT)
-		seq_printf(seq, "   %02d: ", (field->shift % 32), last_bit);
+		seq_printf(seq, "%02d:%02d: ", (field->shift % 32), last_bit);
 	else
 		seq_printf(seq, "%02d:%02d: ", (field->shift % 32), last_bit);
 
@@ -76,5 +76,5 @@ void print_register(struct seq_file *seq, void * base,
 		print_field(seq, val, field);
 	}
 
-	iounmap(base_mapped);					\
+	iounmap(base_mapped);
 }

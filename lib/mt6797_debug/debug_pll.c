@@ -6,6 +6,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/seq_file.h>
+#include "regdump.h"
 
 #define TOPCKGEN_BASE		0x10000000
 #define TOPCKGEN_LENGTH		0x1000
@@ -78,6 +79,7 @@ DEFINE_SHOW_ATTRIBUTE(debug_pll);
 
 void __init mt6797_debug_pll_init(struct dentry *debug_dir)
 {
-	debugfs_create_file("pll_bus", S_IFREG | S_IRUGO, debug_dir, NULL,
-		       &debug_pll_fops);
+	struct dentry *dir=debugfs_create_file("pll_bus", S_IFREG | S_IRUGO, debug_dir,
+		NULL, &debug_pll_fops);
+	PRINT_IF_ERROR(dir);
 }

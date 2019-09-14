@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0
 
-ccflags-$(MT6797_DEBUG_FORCE_UART) += -DMT6797_DEBUG_FORCE_UART=1
+ccflags-$(CONFIG_MT6797_DEBUG_FORCE_UART) += -DMT6797_DEBUG_FORCE_UART=1
 
-obj-$(MT6797_DEBUG) += mt6797_debug.o
+obj-$(CONFIG_MT6797_DEBUG) += mt6797_debug.o
 mt6797_debug-objs := main.o
 mt6797_debug-objs += regdump.o
 mt6797_debug-objs += debug_bus_protect_regs.o

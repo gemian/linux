@@ -29,10 +29,10 @@ DEFINE_REGISTER(M4U_IVRP_PADDR, 0x114, "M4U trans. fault prot. buf.",
 
 void __init mt6797_debug_m4u_regs_init(struct dentry *regs_dir)
 {
-	regs_dir = debugfs_create_dir("m4u", regs_dir);
-
-	REGISTER_FILE(regs_dir, M4U_BASE, M4U_PT_BASE_ADDR);
-	REGISTER_FILE(regs_dir, M4U_BASE, M4U_PT_BASE_ADDR_SEC);
-	REGISTER_FILE(regs_dir, M4U_BASE, M4U_CTRL);
-	REGISTER_FILE(regs_dir, M4U_BASE, M4U_IVRP_PADDR);
+	struct dentry *dir = debugfs_create_dir("m4u", regs_dir);
+	PRINT_IF_ERROR(dir);
+	PRINT_IF_ERROR(REGISTER_FILE(dir, M4U_BASE, M4U_PT_BASE_ADDR));
+	PRINT_IF_ERROR(REGISTER_FILE(dir, M4U_BASE, M4U_PT_BASE_ADDR_SEC));
+	PRINT_IF_ERROR(REGISTER_FILE(dir, M4U_BASE, M4U_CTRL));
+	PRINT_IF_ERROR(REGISTER_FILE(dir, M4U_BASE, M4U_IVRP_PADDR));
 }

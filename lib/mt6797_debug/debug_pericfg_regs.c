@@ -49,8 +49,9 @@ DEFINE_REGISTER(PERI_PDN0_CLR, 0x010, "Peripheral powerdown clear 0",
 
 void __init mt6797_debug_pericfg_regs_init(struct dentry *regs_dir)
 {
-	regs_dir = debugfs_create_dir("pericfg", regs_dir);
-	REGISTER_FILE(regs_dir, PERICFG_BASE, PERI_PDN0_STA);
-	REGISTER_FILE(regs_dir, PERICFG_BASE, PERI_PDN0_SET);
-	REGISTER_FILE(regs_dir, PERICFG_BASE, PERI_PDN0_CLR);
+	struct dentry *dir = debugfs_create_dir("pericfg", regs_dir);
+	PRINT_IF_ERROR(dir);
+	PRINT_IF_ERROR(REGISTER_FILE(dir, PERICFG_BASE, PERI_PDN0_STA));
+	PRINT_IF_ERROR(REGISTER_FILE(dir, PERICFG_BASE, PERI_PDN0_SET));
+	PRINT_IF_ERROR(REGISTER_FILE(dir, PERICFG_BASE, PERI_PDN0_CLR));
 }

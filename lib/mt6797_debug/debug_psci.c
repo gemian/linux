@@ -7,6 +7,7 @@
 #include <linux/module.h>
 #include <linux/seq_file.h>
 #include <uapi/linux/psci.h>
+#include "regdump.h"
 
 static const char * affinities[] = { "on", "off", "pending on" };
 
@@ -49,6 +50,7 @@ DEFINE_SHOW_ATTRIBUTE(debug_psci);
 
 void __init mt6797_debug_psci_init(struct dentry *debug_dir)
 {
-	debugfs_create_file("psci_status", S_IFREG | S_IRUGO, debug_dir, NULL,
-		       &debug_psci_fops);
+	struct dentry *dir = debugfs_create_file("psci_status", S_IFREG | S_IRUGO,
+		debug_dir, NULL, &debug_psci_fops);
+	PRINT_IF_ERROR(dir);
 }
