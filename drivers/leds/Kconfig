@@ -92,6 +92,13 @@ config LEDS_AS3645A
 	  controller. V4L2 flash API is provided as well if
 	  CONFIG_V4L2_FLASH_API is enabled.
 
+config LEDS_AW9120
+	tristate "LED AW9120 Support"
+	default n
+	help
+	  Say Y here if you have AW9120 led device.
+	  If unsure, say N.
+
 config LEDS_BCM6328
 	tristate "LED Support for Broadcom BCM6328"
 	depends on LEDS_CLASS
