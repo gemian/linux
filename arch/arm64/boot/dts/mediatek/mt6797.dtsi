@@ -18,6 +18,8 @@
 
 / {
 	compatible = "mediatek,mt6797";
+	//3.18 has gic? but that crashes shortly after saying:
+	//genirq: Setting trigger mode 8 for irq 7 failed (gic_set_type+0x0/0x78 - GICv3))
 	interrupt-parent = <&sysirq>;
 	#address-cells = <2>;
 	#size-cells = <2>;
