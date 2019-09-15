@@ -190,7 +190,7 @@
 		};
 
 		idle-states {
-			entry-method = "psci";
+			entry-method = "arm,psci";
 
 			cpu_sleep: cpu-sleep-0 {
 				compatible = "arm,idle-state";
@@ -236,7 +236,6 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		#redistributor-regions = <1>;
-		interrupt-parent = <&gic>;
 		interrupt-controller;
 		reg = <0 0x19000000 0 0x40000>, // distributor
 			<0 0x19200000 0 0x200000>, // redistributor
