@@ -853,8 +853,9 @@ int __irq_set_trigger(struct irq_desc *desc, unsigned long flags)
 		ret = 0;
 		break;
 	default:
-		pr_err("Setting trigger mode %lu for irq %u failed (%pS)\n",
-		       flags, irq_desc_get_irq(desc), chip->irq_set_type);
+		pr_err("Setting trigger mode %lu for irq %u failed (%pS - %s)\n",
+		       flags, irq_desc_get_irq(desc), chip->irq_set_type,
+		       chip->name ? : "unknown");
 	}
 	if (unmask)
 		unmask_irq(desc);
