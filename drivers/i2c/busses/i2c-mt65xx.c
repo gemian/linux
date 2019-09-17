@@ -276,10 +276,20 @@ static const struct mtk_i2c_compatible mt6589_compat = {
 	.ltiming_adjust = 0,
 };
 
-//static const struct mtk_i2c_compatible mt6797_compat = {
-//    .dma_support = 1,
-//    .idvfs_i2c = 1,
-//};
+static const struct mtk_i2c_compatible mt6797_compat = {
+	//.dma_support = 1, //seems to all support this
+	//.idvfs_i2c = 1, //equilivent to aux_len_reg=0?
+	.quirks = NULL,
+	.regs = mt_i2c_regs_v1,
+	.pmic_i2c = 0,
+	.dcm = 0,
+	.auto_restart = 0,
+	.aux_len_reg = 0,
+	.support_33bits = 1, //required for 4g mode
+	.timing_adjust = 0,
+	.dma_sync = 0,
+	.ltiming_adjust = 0,
+};
 
 static const struct mtk_i2c_compatible mt7622_compat = {
 	.quirks = &mt7622_i2c_quirks,
@@ -323,7 +333,7 @@ static const struct of_device_id mtk_i2c_of_match[] = {
 	{ .compatible = "mediatek,mt2712-i2c", .data = &mt2712_compat },
 	{ .compatible = "mediatek,mt6577-i2c", .data = &mt6577_compat },
 	{ .compatible = "mediatek,mt6589-i2c", .data = &mt6589_compat },
-//    { .compatible = "mediatek,mt6797-i2c", .data = &mt6797_compat },
+	{ .compatible = "mediatek,mt6797-i2c", .data = &mt6797_compat },
 	{ .compatible = "mediatek,mt7622-i2c", .data = &mt7622_compat },
 	{ .compatible = "mediatek,mt8173-i2c", .data = &mt8173_compat },
 	{ .compatible = "mediatek,mt8183-i2c", .data = &mt8183_compat },
@@ -929,17 +939,23 @@ static int mtk_i2c_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	i2c->base = devm_ioremap_resource(&pdev->dev, res);
-	if (IS_ERR(i2c->base))
+	if (IS_ERR(i2c->base)) {
+		dev_err(&pdev->dev, "[%s devm_ioremap_resource IORESOURCE_MEM 0 failed]\n",__func__);
 		return PTR_ERR(i2c->base);
+	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	i2c->pdmabase = devm_ioremap_resource(&pdev->dev, res);
-	if (IS_ERR(i2c->pdmabase))
+	if (IS_ERR(i2c->pdmabase)) {
+		dev_err(&pdev->dev, "[%s devm_ioremap_resource IORESOURCE_MEM 1 failed]\n",__func__);
 		return PTR_ERR(i2c->pdmabase);
+	}
 
 	irq = platform_get_irq(pdev, 0);
-	if (irq <= 0)
+	if (irq <= 0) {
+		dev_err(&pdev->dev, "[%s platform_get_irq - %d]\n",__func__,irq);
 		return irq;
+	}
 
 	init_completion(&i2c->msg_complete);
 
@@ -954,14 +970,18 @@ static int mtk_i2c_probe(struct platform_device *pdev)
 	i2c->adap.retries = 1;
 
 	ret = mtk_i2c_parse_dt(pdev->dev.of_node, i2c);
-	if (ret)
+	if (ret) {
+		dev_err(&pdev->dev, "[%s mtk_i2c_parse_dt - %d]\n",__func__,ret);
 		return -EINVAL;
+	}
 
 	if (i2c->dev_comp->timing_adjust)
 		i2c->clk_src_div *= I2C_DEFAULT_CLK_DIV;
 
-	if (i2c->have_pmic && !i2c->dev_comp->pmic_i2c)
+	if (i2c->have_pmic && !i2c->dev_comp->pmic_i2c) {
+		dev_err(&pdev->dev, "have-pmic set without pmic available on i2c\n");
 		return -EINVAL;
+	}
 
 	i2c->clk_main = devm_clk_get(&pdev->dev, "main");
 	if (IS_ERR(i2c->clk_main)) {
@@ -1023,8 +1043,10 @@ static int mtk_i2c_probe(struct platform_device *pdev)
 
 	i2c_set_adapdata(&i2c->adap, i2c);
 	ret = i2c_add_adapter(&i2c->adap);
-	if (ret)
+	if (ret) {
+		dev_err(&pdev->dev, "[%s mtk_i2c_parse_dt - %d]\n",__func__,ret);
 		return ret;
+	}
 
 	platform_set_drvdata(pdev, i2c);
 
