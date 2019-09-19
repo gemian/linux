@@ -185,8 +185,8 @@ int pinconf_apply_setting(const struct pinctrl_setting *setting)
 				setting->data.configs.num_configs);
 		if (ret < 0) {
 			dev_err(pctldev->dev,
-				"pin_config_group_set op failed for group %d\n",
-				setting->data.configs.group_or_pin);
+				"pin_config_group_set op failed for group %d (%d)\n",
+				setting->data.configs.group_or_pin, ret);
 			return ret;
 		}
 		break;

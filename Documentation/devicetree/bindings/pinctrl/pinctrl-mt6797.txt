@@ -6,9 +6,11 @@ Required properties:
 - compatible: Value should be one of the following.
               "mediatek,mt6797-pinctrl", compatible with mt6797 pinctrl.
 - reg:        Should contain address and size for gpio, iocfgl, iocfgb,
-              iocfgr and iocfgt register bases.
+              iocfgr and iocfgt register bases. May contain an entry for
+              eint, if interrupt is supported.
 - reg-names:  An array of strings describing the "reg" entries. Must
               contain "gpio", "iocfgl", "iocfgb", "iocfgr", "iocfgt".
+              May contain an entry for "eint", if interrupt is supported.
 - gpio-controller: Marks the device node as a gpio controller.
 - #gpio-cells: Should be two. The first cell is the gpio pin number
                and the second cell is used for optional parameters.
@@ -68,11 +70,15 @@ Examples:
                       <0 0x10002000 0 0x400>,
                       <0 0x10002400 0 0x400>,
                       <0 0x10002800 0 0x400>,
-                      <0 0x10002C00 0 0x400>;
+                      <0 0x10002C00 0 0x400>,
+                      <0 0x1000b000 0 0x1000>;
                 reg-names = "gpio", "iocfgl", "iocfgb",
-                            "iocfgr", "iocfgt";
+                            "iocfgr", "iocfgt", "eint";
                 gpio-controller;
                 #gpio-cells = <2>;
+                interrupt-controller;
+                #interrupt-cells = <2>;
+                interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
 
                 uart1_pins_a: uart1 {
                         pins1 {

@@ -70,41 +70,55 @@ static int mtk_hw_pin_field_lookup(struct mtk_pinctrl *hw,
 {
 	const struct mtk_pin_field_calc *c, *e;
 	const struct mtk_pin_reg_calc *rc;
-	u32 bits, start = 0, end, found = 0, check;
+	u32 bits;
+	s32 start = 0, end, found = 0, check;
+//	dev_err(hw->dev, "[%s] field %d ", __func__, field);
 
 	if (hw->soc->reg_cal && hw->soc->reg_cal[field].range) {
 		rc = &hw->soc->reg_cal[field];
 	} else {
-		dev_dbg(hw->dev,
-			"Not support field %d for pin %d (%s)\n",
+		dev_err(hw->dev,
+			"Not support field A %d for pin %d (%s)\n",
 			field, desc->number, desc->name);
 		return -ENOTSUPP;
 	}
+//	dev_err(hw->dev,"[%s] 2 ", __func__);
 
 	end = rc->nranges - 1;
 	c = rc->range;
 	e = c + rc->nranges;
+//	dev_err(hw->dev,"[%s] 3 ", __func__);
 
 	while (start <= end) {
 		check = (start + end) >> 1;
+//		dev_err(hw->dev,"[%s] 3.1 check %d = start %d + end %d >> 1", __func__, check, start, end);
+//		dev_err(hw->dev,"[%s] 3.1a desc %p, rc->range %p, rc->nranges %d", __func__, desc, rc->range, rc->nranges);
+//		dev_err(hw->dev,"[%s] 3.1b desc->number %d, rc->range[check].s_pin %d, rc->range[check].e_pin %d", __func__, desc->number, rc->range[check].s_pin, rc->range[check].e_pin);
 		if (desc->number >= rc->range[check].s_pin && desc->number <= rc->range[check].e_pin) {
+//			dev_err(hw->dev,"[%s] 3.2 ", __func__);
 			found = 1;
 			break;
-		} else if (start == end)
+		} else if (start == end) {
+//			dev_err(hw->dev,"[%s] 3.3 ", __func__);
 			break;
-		else if (desc->number < rc->range[check].s_pin)
+		} else if (desc->number < rc->range[check].s_pin) {
+//			dev_err(hw->dev,"[%s] 3.4 ", __func__);
 			end = check - 1;
-		else
+		} else {
+//			dev_err(hw->dev,"[%s] 3.5 ", __func__);
 			start = check + 1;
+		}
 	}
+//	dev_err(hw->dev,"[%s] 4 ", __func__);
 
 	if (!found) {
-		dev_dbg(hw->dev, "Not support field %d for pin = %d (%s)\n",
+		dev_err(hw->dev, "Not support field B %d for pin = %d (%s)\n",
 			field, desc->number, desc->name);
 		return -ENOTSUPP;
 	}
 
 	c = rc->range + check;
+//	dev_err(hw->dev,"[%s] 5 ", __func__);
 
 	if (c->i_base > hw->nbase - 1) {
 		dev_err(hw->dev,
@@ -112,6 +126,7 @@ static int mtk_hw_pin_field_lookup(struct mtk_pinctrl *hw,
 			field, desc->number, desc->name);
 		return -EINVAL;
 	}
+//	dev_err(hw->dev,"[%s] 6 ", __func__);
 
 	/* Calculated bits as the overall offset the pin is located at,
 	 * if c->fixed is held, that determines the all the pins in the
@@ -119,6 +134,7 @@ static int mtk_hw_pin_field_lookup(struct mtk_pinctrl *hw,
 	 */
 	bits = c->fixed ? c->s_bit : c->s_bit +
 	       (desc->number - c->s_pin) * (c->x_bits);
+//	dev_err(hw->dev,"[%s] 7 ", __func__);
 
 	/* Fill pfd from bits. For example 32-bit register applied is assumed
 	 * when c->sz_reg is equal to 32.
@@ -127,12 +143,14 @@ static int mtk_hw_pin_field_lookup(struct mtk_pinctrl *hw,
 	pfd->offset = c->s_addr + c->x_addrs * (bits / c->sz_reg);
 	pfd->bitpos = bits % c->sz_reg;
 	pfd->mask = (1 << c->x_bits) - 1;
+//	dev_err(hw->dev,"[%s] 8 ", __func__);
 
 	/* pfd->next is used for indicating that bit wrapping-around happens
 	 * which requires the manipulation for bit 0 starting in the next
 	 * register to form the complete field read/write.
 	 */
 	pfd->next = pfd->bitpos + c->x_bits > c->sz_reg ? c->x_addrs : 0;
+//	dev_err(hw->dev,"[%s] 9 ", __func__);
 
 	return 0;
 }
@@ -792,16 +810,23 @@ int mtk_pinconf_bias_get_combo(struct mtk_pinctrl *hw,
 			      u32 *pullup, u32 *enable)
 {
 	int err;
-
+//	dev_err(hw->dev, "[%s] %d, %d", __func__, *pullup, *enable);
 	err = mtk_pinconf_bias_get_pu_pd(hw, desc, pullup, enable);
-	if (!err)
+	if (!err) {
 		goto out;
+	}
+//	dev_err(hw->dev, "[%s] mtk_pinconf_bias_get_pu_pd err %d", __func__, err);
 
 	err = mtk_pinconf_bias_get_pullsel_pullen(hw, desc, pullup, enable);
-	if (!err)
+	if (!err) {
 		goto out;
+	}
+//	dev_err(hw->dev, "[%s] mtk_pinconf_bias_get_pullsel_pullen err %d", __func__, err);
 
 	err = mtk_pinconf_bias_get_pupd_r1_r0(hw, desc, pullup, enable);
+	if (err != 0) {
+//		dev_err(hw->dev, "[%s] mtk_pinconf_bias_get_pupd_r1_r0 err %d", __func__, err);
+	}
 
 out:
 	return err;

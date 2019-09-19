@@ -16,14 +16,6 @@
  * _i_based could be used to indicate what base the pin should be mapped into.
  */
 
-#define PIN_FIELD_BASE(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit, _x_bits)	\
-	PIN_FIELD_CALC(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit,	\
-		       _x_bits, 32, 0)
-
-#define PINS_FIELD_BASE(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit, _x_bits)	\
-	PIN_FIELD_CALC(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit,	\
-		      _x_bits, 32, 1)
-
 static const struct mtk_pin_field_calc mt8183_pin_mode_range[] = {
 	PIN_FIELD(0, 192, 0x300, 0x10, 0, 4),
 };

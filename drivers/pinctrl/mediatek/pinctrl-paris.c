@@ -201,6 +201,7 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 
 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[pin];
 
+	dev_err(hw->dev, "mtk_pinconf_set - %d\n", (u32)param);
 	switch ((u32)param) {
 	case PIN_CONFIG_BIAS_DISABLE:
 		if (hw->soc->bias_set_combo)
@@ -715,8 +716,9 @@ static int mtk_pconf_group_set(struct pinctrl_dev *pctldev, unsigned group,
 		ret = mtk_pinconf_set(pctldev, grp->pin,
 				      pinconf_to_config_param(configs[i]),
 				      pinconf_to_config_argument(configs[i]));
-		if (ret < 0)
+		if (ret < 0) {
 			return ret;
+		}
 
 		grp->config = configs[i];
 	}

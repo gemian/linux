@@ -137,41 +137,41 @@ int aw9120_gpio_init(struct platform_device *pdev)
 	if (IS_ERR(aw9120ctrl)) {
 		dev_err(&pdev->dev, "Cannot find aw9120 pinctrl!");
 		ret = PTR_ERR(aw9120ctrl);
-        dev_err(&pdev->dev, "%s devm_pinctrl_get fail!\n", __func__);
+		dev_err(&pdev->dev, "[%s] devm_pinctrl_get fail!\n", __func__);
 	}
 	aw9120_pdn_high = pinctrl_lookup_state(aw9120ctrl, "aw9120_pdn_high");
 	if (IS_ERR(aw9120_pdn_high)) {
 		ret = PTR_ERR(aw9120_pdn_high);
-        dev_err(&pdev->dev, "%s : pinctrl err, aw9120_pdn_high\n", __func__);
+		dev_err(&pdev->dev, "[%s] : pinctrl err, aw9120_pdn_high\n", __func__);
 	}
 
 	aw9120_pdn_low = pinctrl_lookup_state(aw9120ctrl, "aw9120_pdn_low");
 	if (IS_ERR(aw9120_pdn_low)) {
 		ret = PTR_ERR(aw9120_pdn_low);
-        dev_err(&pdev->dev, "%s : pinctrl err, aw9120_pdn_low\n", __func__);
+		dev_err(&pdev->dev, "[%s] : pinctrl err, aw9120_pdn_low\n", __func__);
 	}
 
-    dev_info(&pdev->dev, "%s success\n", __func__);
+	dev_info(&pdev->dev, "[%s] success\n", __func__);
 	return ret;
 }
 
 static void aw9120_hw_on(void)
 {
-	printk("%s enter\n", __func__);
+	pr_err("[%s] enter\n", __func__);
 	pinctrl_select_state(aw9120ctrl, aw9120_pdn_low);
 	msleep(5);
 	pinctrl_select_state(aw9120ctrl, aw9120_pdn_high);
 	msleep(5);
-	printk("%s out\n", __func__);
+	pr_err("[%s] out\n", __func__);
 }
 
 #if 0
 static void aw9120_hw_off(void)
 {
-	printk("%s enter\n", __func__);
+	pr_err("%s enter\n", __func__);
 	pinctrl_select_state(aw9120ctrl, aw9120_pdn_low);
 	msleep(5);
-	printk("%s out\n", __func__);
+	pr_err("%s out\n", __func__);
 }
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -337,7 +337,7 @@ static int aw9120_led_id_from_name(unsigned int led_name)
 		return led_name - 1;
 	}
 
-	printk("[aw9120] invalid LED %d\n", led_name);
+	pr_err("[aw9120] invalid LED %d\n", led_name);
 	return -1;
 }
 
@@ -410,7 +410,7 @@ static ssize_t aw9120_value_proc_write(struct file *filp, const char __user *buf
 	char str_buf[16] = {0};
 
 	if (copy_from_user(str_buf, buff, count) ){
-		printk("copy_from_user---error\n");
+		pr_err("copy_from_user---error\n");
 		return -EFAULT;
 	}
 
@@ -488,7 +488,7 @@ static int aw9120_i2c_probe(struct i2c_client *client, const struct i2c_device_i
 	int count = 0;
 	unsigned int reg_value;
 
-	printk("%s Enter\n", __func__);
+	pr_err("[%s] Enter\n", __func__);
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		err = -ENODEV;
@@ -496,13 +496,13 @@ static int aw9120_i2c_probe(struct i2c_client *client, const struct i2c_device_i
 	}
 
 	aw9120_i2c_client = client;
-	printk("%s: i2c addr=%x\n", __func__, client->addr);
+	pr_err("[%s]: i2c addr=%x\n", __func__, client->addr);
 
 	aw9120_hw_on();
 
-	for(count = 0; count < 5; count++){
+	for(count = 0; count < 5; count++) {
 		reg_value = i2c_read_reg(0x00); //read chip ID
-		printk("%s: aw9120 chip ID = 0x%4x\n", __func__, reg_value);
+		pr_err("%s: aw9120 chip ID = 0x%4x\n", __func__, reg_value);
 		if (reg_value == 0xb223)
 			break;
 		msleep(5);
@@ -520,7 +520,7 @@ static int aw9120_i2c_probe(struct i2c_client *client, const struct i2c_device_i
 	return 0;
 
 exit_create_singlethread:
-	printk("==singlethread error =\n");
+	pr_err("==singlethread error =\n");
 	i2c_set_clientdata(client, NULL);
 	aw9120_i2c_client = NULL;
 exit_check_functionality_failed:
@@ -529,7 +529,7 @@ exit_check_functionality_failed:
 
 static int aw9120_i2c_remove(struct i2c_client *client)
 {
-	printk("%s enter\n", __func__);
+	pr_err("%s enter\n", __func__);
 
 	i2c_set_clientdata(client, NULL);
 	aw9120_i2c_client = NULL;
@@ -543,12 +543,10 @@ static const struct i2c_device_id aw9120_i2c_id[] = {
 MODULE_DEVICE_TABLE(i2c, aw9120_ts_id);
 
 
-#ifdef CONFIG_OF
 static const struct of_device_id aw9120_i2c_of_match[] = {
 	{.compatible = "mediatek,aw9120_led"},
 	{},
 };
-#endif
 static struct i2c_driver aw9120_i2c_driver = {
 	.probe		= aw9120_i2c_probe,
 	.remove		= aw9120_i2c_remove,
@@ -556,9 +554,7 @@ static struct i2c_driver aw9120_i2c_driver = {
 	.driver	= {
 		.name	= AW9120_LED_NAME,
 		.owner	= THIS_MODULE,
-#ifdef CONFIG_OF
 		.of_match_table = aw9120_i2c_of_match,
-#endif	
 	},
 };
 
@@ -567,7 +563,7 @@ static struct i2c_driver aw9120_i2c_driver = {
 //////////////////////////////////////////////////////////////////////////////////////////
 static int aw9120_led_remove(struct platform_device *pdev)
 {
-	printk("%s start!\n", __func__);
+	pr_err("[%s] start!\n", __func__);
 	i2c_del_driver(&aw9120_i2c_driver);
 	return 0;
 }
@@ -576,68 +572,64 @@ static int aw9120_led_probe(struct platform_device *pdev)
 {
 	int ret;
 
-	printk("%s start!\n", __func__);
+	dev_err(&pdev->dev, "[%s] start!\n", __func__);
 	
 	ret = aw9120_gpio_init(pdev);
 	if (ret != 0) {
-		printk("[%s] failed to init aw9120 pinctrl.\n", __func__);
+			dev_err(&pdev->dev, "[%s] failed to init aw9120 pinctrl.\n", __func__);
 		return ret;
 	} else {
-		printk("[%s] Success to init aw9120 pinctrl.\n", __func__);
+			dev_err(&pdev->dev, "[%s] Success to init aw9120 pinctrl.\n", __func__);
 	}
 	
 	ret = i2c_add_driver(&aw9120_i2c_driver);
 	if (ret != 0) {
-		printk("[%s] failed to register aw9120 i2c driver.\n", __func__);
+			dev_err(&pdev->dev, "[%s] failed to register aw9120 i2c driver.\n", __func__);
 		return ret;
 	} else {
-		printk("[%s] Success to register aw9120 i2c driver.\n", __func__);
+			dev_err(&pdev->dev, "[%s] Success to register aw9120 i2c driver.\n", __func__);
 	}
 
-	printk("%s exit!\n", __func__);
+	dev_err(&pdev->dev, "[%s] exit!\n", __func__);
 	
 	return 0;
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id aw9120_led_of_match[] = {
 	{.compatible = "mediatek,aw9120_led"},
 	{},
 };
-#endif
 
 static struct platform_driver aw9120_led_driver = {
 	.probe	 = aw9120_led_probe,
 	.remove	 = aw9120_led_remove,
 	.driver = {
 		.name   = "aw9120_led",
-#ifdef CONFIG_OF
 		.of_match_table = aw9120_led_of_match,
-#endif
 	}
 };
 
 static int __init aw9120_led_init(void)
 {
 	int ret;
-	printk("%s Enter\n", __func__);
+	pr_err("[%s] Enter\n", __func__);
 
 	ret = platform_driver_register(&aw9120_led_driver);
 	if (ret) {
-		printk("****[%s] Unable to register driver (%d)\n", __func__, ret);
+		pr_err("****[%s] Unable to register driver (%d)\n", __func__, ret);
 		return ret;
 	}
 
-	printk("%s Exit\n", __func__);
+	pr_err("%s Exit\n", __func__);
 
 	return ret;
 }
 
 static void __exit aw9120_led_exit(void)
 {
-	printk("%s Enter\n", __func__);
+	pr_err("[%s] Enter\n", __func__);
 	platform_driver_unregister(&aw9120_led_driver);
-	printk("%s Exit\n", __func__);
+	pr_err("[%s] Exit\n", __func__);
 }
 
 module_init(aw9120_led_init);
