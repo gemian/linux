@@ -172,8 +172,10 @@
 			pins_i2c {
 			//MT6797_GPIO38__FUNC_SDA0_0
 			//MT6797_GPIO37__FUNC_SCL0_0
-				pinmux = <MT6797_GPIO52__FUNC_SDA0_1>,
-					 <MT6797_GPIO51__FUNC_SCL0_1>;
+			//MT6797_GPIO52__FUNC_SDA0_1
+			//MT6797_GPIO51__FUNC_SCL0_1
+				pinmux = <MT6797_GPIO38__FUNC_SDA0_0>,
+					 <MT6797_GPIO37__FUNC_SCL0_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
@@ -182,8 +184,10 @@
 			pins_i2c {
 			//MT6797_GPIO56__FUNC_SDA1_0
 			//MT6797_GPIO55__FUNC_SCL1_0
-				pinmux = <MT6797_GPIO60__FUNC_SDA0_2>,
-					 <MT6797_GPIO59__FUNC_SCL0_2>;
+			//MT6797_GPIO60__FUNC_SDA0_2
+			//MT6797_GPIO59__FUNC_SCL0_2
+				pinmux = <MT6797_GPIO56__FUNC_SDA1_0>,
+					 <MT6797_GPIO55__FUNC_SCL1_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
@@ -192,8 +196,10 @@
 			pins_i2c {
 			//MT6797_GPIO96__FUNC_SCL2_0
 			//MT6797_GPIO95__FUNC_SDA2_0
-				pinmux = <MT6797_GPIO92__FUNC_SCL0_3>,
-					 <MT6797_GPIO91__FUNC_SDA0_3>;
+			//MT6797_GPIO92__FUNC_SCL0_3
+			//MT6797_GPIO91__FUNC_SDA0_3
+				pinmux = <MT6797_GPIO96__FUNC_SCL2_0>,
+					 <MT6797_GPIO95__FUNC_SDA2_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
@@ -202,8 +208,10 @@
 			pins_i2c {
 			//MT6797_GPIO74__FUNC_SCL3_0
 			//MT6797_GPIO75__FUNC_SDA3_0
-				pinmux = <MT6797_GPIO252__FUNC_SCL0_4>,
-					 <MT6797_GPIO253__FUNC_SDA0_4>;
+			//MT6797_GPIO252__FUNC_SCL0_4
+			//MT6797_GPIO253__FUNC_SDA0_4
+				pinmux = <MT6797_GPIO74__FUNC_SCL3_0>,
+					 <MT6797_GPIO75__FUNC_SDA3_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
@@ -212,8 +220,10 @@
 			pins_i2c {
 			//MT6797_GPIO239__FUNC_SCL4_0
 			//MT6797_GPIO238__FUNC_SDA4_0
-				pinmux = <MT6797_GPIO53__FUNC_SCL1_1>,
-					 <MT6797_GPIO54__FUNC_SDA1_1>;
+			//MT6797_GPIO53__FUNC_SCL1_1
+			//MT6797_GPIO54__FUNC_SDA1_1
+				pinmux = <MT6797_GPIO239__FUNC_SCL4_0>,
+					 <MT6797_GPIO238__FUNC_SDA4_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
@@ -222,8 +232,10 @@
 			pins_i2c {
 			//MT6797_GPIO241__FUNC_SCL5_0
 			//MT6797_GPIO240__FUNC_SDA5_0
-				pinmux = <MT6797_GPIO60__FUNC_SCL1_2>,
-					 <MT6797_GPIO58__FUNC_SDA1_2>;
+			//MT6797_GPIO60__FUNC_SCL1_2
+			//MT6797_GPIO58__FUNC_SDA1_2
+				pinmux = <MT6797_GPIO241__FUNC_SCL5_0>,
+					 <MT6797_GPIO240__FUNC_SDA5_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
@@ -232,8 +244,10 @@
 			pins_i2c {
 			//MT6797_GPIO151__FUNC_SCL6_0
 			//MT6797_GPIO152__FUNC_SDA6_0
-				pinmux = <MT6797_GPIO111__FUNC_SCL1_3>,
-					 <MT6797_GPIO110__FUNC_SDA1_3>;
+			//MT6797_GPIO111__FUNC_SCL1_3
+			//MT6797_GPIO110__FUNC_SDA1_3
+				pinmux = <MT6797_GPIO151__FUNC_SCL6_0>,
+					 <MT6797_GPIO152__FUNC_SDA6_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
@@ -242,12 +256,37 @@
 			pins_i2c {
 			//MT6797_GPIO153__FUNC_SCL7_0
 			//MT6797_GPIO154__FUNC_SDA7_0
-				pinmux = <MT6797_GPIO141__FUNC_SCL1_4>,
-					 <MT6797_GPIO140__FUNC_SDA1_4>;
+			//MT6797_GPIO141__FUNC_SCL1_4
+			//MT6797_GPIO140__FUNC_SDA1_4
+				pinmux = <MT6797_GPIO153__FUNC_SCL7_0>,
+					 <MT6797_GPIO154__FUNC_SDA7_0>;
 				mediatek,pull-up-adv = <3>;
 			};
 		};
 
+		i2c_pins_8: i2c8 {
+			pins_i2c {
+			//MT6797_GPIO96__FUNC_SCL2_0
+			//MT6797_GPIO95__FUNC_SDA2_0
+			//MT6797_GPIO141__FUNC_SCL1_4
+			//MT6797_GPIO140__FUNC_SDA1_4
+				pinmux = <MT6797_GPIO96__FUNC_SCL2_0>,
+					 <MT6797_GPIO95__FUNC_SDA2_0>;
+				mediatek,pull-up-adv = <3>;
+			};
+		};
+
+		i2c_pins_9: i2c9 {
+			pins_i2c {
+			//MT6797_GPIO74__FUNC_SCL3_0
+			//MT6797_GPIO75__FUNC_SDA3_0
+			//MT6797_GPIO141__FUNC_SCL1_4
+			//MT6797_GPIO140__FUNC_SDA1_4
+				pinmux = <MT6797_GPIO74__FUNC_SCL3_0>,
+					 <MT6797_GPIO75__FUNC_SDA3_0>;
+				mediatek,pull-up-adv = <3>;
+			};
+		};
 	};
 
 	scpsys: scpsys@10006000 {
