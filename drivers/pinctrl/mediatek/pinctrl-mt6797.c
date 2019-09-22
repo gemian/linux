@@ -19,6 +19,12 @@
  * iocfg[r]:0x10002800, iocfg[t]:0x10002C00.
  * _i_base could be used to indicate what base the pin should be mapped into.
  */
+//#define PIN_FIELD_BASE(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit, _x_bits)	\
+	PIN_FIELD_CALC(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit,	\
+		       _x_bits, 32, 0)
+//#define PIN_FIELD(_s_pin, _e_pin, _s_addr, _x_addrs, _s_bit, _x_bits)	\
+	PIN_FIELD_CALC(_s_pin, _e_pin, 0, _s_addr, _x_addrs, _s_bit,	\
+		       _x_bits, 32, 0)
 
 static const struct mtk_pin_field_calc mt6797_pin_mode_range[] = {
 	PIN_FIELD(0, 261, 0x300, 0x10, 0, 4),
@@ -295,9 +301,7 @@ static const struct mtk_pin_field_calc mt6797_pin_pd_range[] = {
 	PIN_FIELD_BASE(260, 260, 1, 0x00e0, 0x10, 3, 1),
 	PIN_FIELD_BASE(261, 261, 1, 0x00e0, 0x10, 4, 1),
 };
-//#define PIN_FIELD_BASE(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit, _x_bits)	\
-	PIN_FIELD_CALC(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit,	\
-		       _x_bits, 32, 0)
+
 static const struct mtk_pin_field_calc mt6797_pin_pu_range[] = {
 	PIN_FIELD_BASE(28, 28, 1, 0x00b0, 0x10, 0, 1),
 	PIN_FIELD_BASE(29, 29, 1, 0x00b0, 0x10, 1, 1),
@@ -466,6 +470,12 @@ static const struct mtk_pin_field_calc mt6797_pin_pu_range[] = {
 	PIN_FIELD_BASE(261, 261, 1, 0x00c0, 0x10, 4, 1),
 };
 
+static const struct mtk_pin_field_calc mt6797_pin_tdsel_range[] = {
+};
+
+static const struct mtk_pin_field_calc mt6797_pin_rdsel_range[] = {
+};
+
 static const struct mtk_pin_field_calc mt6797_pin_drv_range[] = {
 	PINS_FIELD_BASE(28, 29, 1, 0x00f0, 0x10, 0, 2),
 	PINS_FIELD_BASE(30, 31, 1, 0x00f0, 0x10, 2, 2),
@@ -590,6 +600,12 @@ static const struct mtk_pin_field_calc mt6797_pin_pupd_range[] = {
 	PIN_FIELD_BASE(155, 155, 1, 0x0100, 0x10, 27, 1),
 	PIN_FIELD_BASE(156, 156, 1, 0x0100, 0x10, 28, 1),
 	PIN_FIELD_BASE(157, 157, 1, 0x0100, 0x10, 29, 1),
+};
+
+static const struct mtk_pin_field_calc mt6797_pin_r0_range[] = {
+};
+
+static const struct mtk_pin_field_calc mt6797_pin_r1_range[] = {
 };
 
 static const struct mtk_pin_field_calc mt6797_pin_ies_range[] = {
@@ -804,11 +820,15 @@ static const struct mtk_pin_reg_calc mt6797_reg_cals[PINCTRL_PIN_REG_MAX] = {
 	[PINCTRL_PIN_REG_SMT] = MTK_RANGE(mt6797_pin_smt_range),
 	[PINCTRL_PIN_REG_PD] = MTK_RANGE(mt6797_pin_pd_range),
 	[PINCTRL_PIN_REG_PU] = MTK_RANGE(mt6797_pin_pu_range),
+	[PINCTRL_PIN_REG_TDSEL] = MTK_RANGE(mt6797_pin_tdsel_range),
+	[PINCTRL_PIN_REG_RDSEL] = MTK_RANGE(mt6797_pin_rdsel_range),
 	[PINCTRL_PIN_REG_DRV] = MTK_RANGE(mt6797_pin_drv_range),
 	[PINCTRL_PIN_REG_PUPD] = MTK_RANGE(mt6797_pin_pupd_range),
+	[PINCTRL_PIN_REG_R0] = MTK_RANGE(mt6797_pin_r0_range),
+	[PINCTRL_PIN_REG_R1] = MTK_RANGE(mt6797_pin_r1_range),
 	[PINCTRL_PIN_REG_IES] = MTK_RANGE(mt6797_pin_ies_range),
 };
-//PINCTRL_PIN_REG_R0
+
 static const char * const mt6797_pinctrl_register_base_names[] = {
 	"gpio", "iocfgl", "iocfgb", "iocfgr", "iocfgt",
 };
