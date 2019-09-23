@@ -201,7 +201,7 @@
 			spi-padmacro = <0>;
 			reg = <0x1100a000 0x1000>;
 			interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys INFRA_SPI>;
+			clocks = <&infrasys CLK_INFRA_SPI>;
 			clock-names = "spi-main";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
@@ -213,7 +213,7 @@
 			spi-padmacro = <1>;
 			reg = <0x11018000 0x1000>;
 			interrupts = <GIC_SPI 132 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys INFRA_SPI2>;
+			clocks = <&infrasys CLK_INFRA_SPI2>;
 			clock-names = "spi-main";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
@@ -225,7 +225,7 @@
 			spi-padmacro = <0>;
 			reg = <0x11019000 0x1000>;
 			interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys INFRA_SPI3>;
+			clocks = <&infrasys CLK_INFRA_SPI3>;
 			clock-names = "spi-main";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
@@ -237,7 +237,7 @@
 			spi-padmacro = <0>;
 			reg = <0x1101a000 0x1000>;
 			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys INFRA_SPI4>;
+			clocks = <&infrasys CLK_INFRA_SPI4>;
 			clock-names = "spi-main";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
@@ -249,7 +249,7 @@
 			spi-padmacro = <0>;
 			reg = <0x1101b000 0x1000>;
 			interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys INFRA_SPI5>;
+			clocks = <&infrasys CLK_INFRA_SPI5>;
 			clock-names = "spi-main";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
