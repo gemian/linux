@@ -3137,7 +3137,7 @@ CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
 # CONFIG_LIBNVDIMM is not set
 # CONFIG_DAX is not set
 CONFIG_NVMEM=y
-# CONFIG_MTK_EFUSE is not set
+CONFIG_MTK_EFUSE=y
 
 #
 # HW tracing support

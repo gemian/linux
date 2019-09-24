@@ -865,6 +865,7 @@ static int mtk_thermal_get_calibration_data(struct device *dev,
 
 	cell = nvmem_cell_get(dev, "calibration-data");
 	if (IS_ERR(cell)) {
+		dev_err(dev, "nvmem_cell_get failed (%d)\n", PTR_ERR(cell));
 		if (PTR_ERR(cell) == -EPROBE_DEFER)
 			return PTR_ERR(cell);
 		return 0;
@@ -874,11 +875,13 @@ static int mtk_thermal_get_calibration_data(struct device *dev,
 
 	nvmem_cell_put(cell);
 
-	if (IS_ERR(buf))
+	if (IS_ERR(buf)) {
+		dev_err(dev, "nvmem_cell_read failed (%d)\n", PTR_ERR(buf));
 		return PTR_ERR(buf);
+	}
 
 	if (len < 3 * sizeof(u32)) {
-		dev_warn(dev, "invalid calibration data\n");
+		dev_err(dev, "invalid calibration data (%d)\n", len);
 		ret = -EINVAL;
 		goto out;
 	}
@@ -990,8 +993,9 @@ static int mtk_thermal_probe(struct platform_device *pdev)
 
 	ret = mtk_thermal_get_calibration_data(&pdev->dev, mt);
 	if (ret) {
-		dev_err(&pdev->dev, "mtk_thermal_get_calibration_data failed\n");
-		return ret;
+		dev_err(&pdev->dev, "mtk_thermal_get_calibration_data failed (%d)\n", ret);
+		//Ignore failures for now use defaults
+		//return ret;
 	}
 
 	mutex_init(&mt->lock);
