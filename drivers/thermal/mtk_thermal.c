@@ -197,6 +197,33 @@ enum {
 /* The calibration coefficient of sensor  */
 #define MT7622_CALIBRATION	165
 
+/* MT6797 thermal sensors */
+typedef enum {
+	MT6797_TS_1     = 0,
+	MT6797_TS_2     = 1,
+	MT6797_TS_3     = 2,
+	MT6797_TS_4     = 3,
+	MT6797_TS_ABB   = 4,
+	MT6797_NUM_SENSORS
+} mt6797_thermal_sensor_id;
+
+typedef enum {
+	MT6797_THERMAL_BANK0     = 0,
+	MT6797_THERMAL_BANK1     = 1,
+	MT6797_THERMAL_BANK2     = 2,
+	MT6797_THERMAL_BANK3     = 3,
+	MT6797_THERMAL_BANK4     = 4,
+	MT6797_THERMAL_BANK5     = 5,
+	MT6797_THERMAL_NUM_BANKS
+} mt6797_thermal_bank_id;
+
+#define MT6797_TEMP_AUXADC_CHANNEL	11
+#define MT6797_NUM_CONTROLLER		1
+
+/* The calibration coefficient of sensor  */
+#define MT6797_CALIBRATION	161
+
+
 /* MT8183 thermal sensors */
 #define MT8183_TS1	0
 #define MT8183_TS2	1
@@ -309,6 +336,31 @@ static const int mt8173_tc_offset[MT8173_NUM_CONTROLLER] = { 0x0, };
 static const int mt8173_vts_index[MT8173_NUM_SENSORS] = {
 	VTS1, VTS2, VTS3, VTS4, VTSABB
 };
+
+/* MT6797 thermal sensor data */
+static const int mt6797_bank_data[MT6797_NUM_SENSORS][2] = {
+	{ MT6797_TS_1 },
+	{ MT6797_TS_4 },
+	{ MT6797_TS_2, MT6797_TS_3 },
+	{ MT6797_TS_2 },
+	{ MT6797_TS_2 },
+};
+
+static const int mt6797_vts_index[MT6797_NUM_SENSORS] = {
+	VTS1, VTS2, VTS3, VTS4, VTSABB
+};
+
+static const int mt6797_tc_offset[MT6797_NUM_CONTROLLER] = { 0x0, };
+
+static const int mt6797_msr[MT6797_NUM_SENSORS] = {
+	TEMP_MSR0, TEMP_MSR1, TEMP_MSR2, TEMP_MSR3, TEMP_MSR0
+};
+
+static const int mt6797_adcpnp[MT6797_NUM_SENSORS] = {
+	TEMP_ADCPNP0, TEMP_ADCPNP1, TEMP_ADCPNP2, TEMP_ADCPNP3, TEMP_ADCPNP0
+};
+
+static const int mt6797_mux_values[MT6797_NUM_SENSORS] = { 0, 1, 2, 3, 16 };
 
 /* MT2701 thermal sensor data */
 static const int mt2701_bank_data[MT2701_NUM_SENSORS] = {
@@ -458,6 +510,44 @@ static const struct mtk_thermal_data mt2712_thermal_data = {
 	.msr = mt2712_msr,
 	.adcpnp = mt2712_adcpnp,
 	.sensor_mux_values = mt2712_mux_values,
+};
+
+/*
+ * MT6797
+ */
+static const struct mtk_thermal_data mt6797_thermal_data = {
+	.auxadc_channel = MT6797_TEMP_AUXADC_CHANNEL,
+	.num_banks = MT6797_THERMAL_NUM_BANKS,
+	.num_sensors = MT6797_NUM_SENSORS,
+	.vts_index = mt7622_vts_index,
+	.cali_val = MT6797_CALIBRATION,
+	.num_controller = MT6797_NUM_CONTROLLER,
+	.controller_offset = mt6797_tc_offset,
+	.need_switch_bank = true,
+	.bank_data = {
+		{
+			.num_sensors = 1,
+			.sensors = mt6797_bank_data[0],
+		}, {
+			.num_sensors = 1,
+			.sensors = mt6797_bank_data[1],
+		}, {
+			.num_sensors = 2,
+			.sensors = mt6797_bank_data[2],
+		}, {
+			.num_sensors = 1,
+			.sensors = mt6797_bank_data[3],
+		}, {
+			.num_sensors = 1,
+			.sensors = mt6797_bank_data[4],
+		}, {
+			.num_sensors = 1,
+			.sensors = mt6797_bank_data[5],
+		},
+	},
+	.msr = mt6797_msr,
+	.adcpnp = mt6797_adcpnp,
+	.sensor_mux_values = mt6797_mux_values,
 };
 
 /*
@@ -851,6 +941,10 @@ static const struct of_device_id mtk_thermal_of_match[] = {
 		.data = (void *)&mt2712_thermal_data,
 	},
 	{
+		.compatible = "mediatek,mt6797-thermal",
+		.data = (void *)&mt6797_thermal_data,
+	},
+	{
 		.compatible = "mediatek,mt7622-thermal",
 		.data = (void *)&mt7622_thermal_data,
 	},
@@ -867,7 +961,6 @@ static int mtk_thermal_probe(struct platform_device *pdev)
 	int ret, i, ctrl_id;
 	struct device_node *auxadc, *apmixedsys, *np = pdev->dev.of_node;
 	struct mtk_thermal *mt;
-	struct resource *res;
 	u64 auxadc_phys_base, apmixed_phys_base;
 	struct thermal_zone_device *tzdev;
 
@@ -878,21 +971,28 @@ static int mtk_thermal_probe(struct platform_device *pdev)
 	mt->conf = of_device_get_match_data(&pdev->dev);
 
 	mt->clk_peri_therm = devm_clk_get(&pdev->dev, "therm");
-	if (IS_ERR(mt->clk_peri_therm))
+	if (IS_ERR(mt->clk_peri_therm)) {
+		dev_err(&pdev->dev, "devm_clk_get therm failed\n");
 		return PTR_ERR(mt->clk_peri_therm);
+	}
 
 	mt->clk_auxadc = devm_clk_get(&pdev->dev, "auxadc");
-	if (IS_ERR(mt->clk_auxadc))
+	if (IS_ERR(mt->clk_auxadc)) {
+		dev_err(&pdev->dev, "devm_clk_get auxadc failed\n");
 		return PTR_ERR(mt->clk_auxadc);
+	}
 
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	mt->thermal_base = devm_ioremap_resource(&pdev->dev, res);
-	if (IS_ERR(mt->thermal_base))
+	mt->thermal_base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(mt->thermal_base)) {
+		dev_err(&pdev->dev, "devm_ioremap_resource failed\n");
 		return PTR_ERR(mt->thermal_base);
+	}
 
 	ret = mtk_thermal_get_calibration_data(&pdev->dev, mt);
-	if (ret)
+	if (ret) {
+		dev_err(&pdev->dev, "mtk_thermal_get_calibration_data failed\n");
 		return ret;
+	}
 
 	mutex_init(&mt->lock);
 
@@ -928,9 +1028,12 @@ static int mtk_thermal_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	ret = device_reset(&pdev->dev);
-	if (ret)
-		return ret;
+	//This fails for 6797 with -2
+	//ret = device_reset(&pdev->dev);
+	//if (ret) {
+		//dev_err(&pdev->dev, "Device reset failed (%d)\n", ret);
+		//return ret;
+	//}
 
 	ret = clk_prepare_enable(mt->clk_auxadc);
 	if (ret) {
@@ -955,6 +1058,7 @@ static int mtk_thermal_probe(struct platform_device *pdev)
 						     &mtk_thermal_ops);
 	if (IS_ERR(tzdev)) {
 		ret = PTR_ERR(tzdev);
+		dev_err(&pdev->dev, "Thermal zone failed (%d)\n", ret);
 		goto err_disable_clk_peri_therm;
 	}
 

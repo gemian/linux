@@ -41,7 +41,6 @@
 		};
 	};
 
-
 	soc {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -254,6 +253,7 @@
 			clock-frequency = <109000000>;
 			clock-div = <1>;
 		};
+
 	};
 
 	memory@40000000 {
@@ -534,6 +534,10 @@
 	status = "okay";
 };
 
+&auxadc {
+	status = "okay";
+};
+
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c_pins_0>;
@@ -591,6 +595,7 @@
 	pinctrl-2 = <&aw_pdn_low>;
 	status = "okay";
 };
+
 &pio {
 	aw_default: aw9120_default {
 	};
@@ -602,6 +607,7 @@
 			output-high;
 		};
 	};
+
 	aw_pdn_low: aw9120_pdn_low {
 		pins_cmd_dat {
 			pinmux = <MT6797_GPIO245__FUNC_GPIO245>;

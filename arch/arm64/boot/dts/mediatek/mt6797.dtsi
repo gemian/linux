@@ -15,6 +15,7 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/pinctrl/mt6797-pinfunc.h>
+#include <dt-bindings/thermal/thermal.h>
 
 / {
 	compatible = "mediatek,mt6797";
@@ -114,6 +115,36 @@
 		#clock-cells = <0>;
 		clock-frequency = <26000000>;
 		clock-output-names = "clk26m";
+	};
+
+	thermal-zones {
+		cpu_thermal: cpu-thermal {
+			polling-delay-passive = <1000>; /* milliseconds */
+			polling-delay = <1000>; /* milliseconds */
+
+			thermal-sensors = <&thermal 0>;
+			sustainable-power = <1500>; /* milliwatts */
+
+			trips {
+				threshold: trip-point@0 {
+					temperature = <68000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+
+				target: trip-point@1 {
+					temperature = <85000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+
+				cpu_crit: cpu_crit@0 {
+					temperature = <115000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+		};
 	};
 
 	timer {
@@ -347,6 +378,14 @@
 		      <0 0x10220690 0 0x10>;
 	};
 
+	auxadc: auxadc@11001000 {
+		compatible = "mediatek,mt6797-auxadc";
+		reg = <0 0x11001000 0 0x1000>;
+		interrupts = <GIC_SPI 74 0x2>;
+		clocks = <&infrasys CLK_INFRA_AUXADC>;
+		clock-names = "main";
+	};
+
 	uart0: serial@11002000 {
 		compatible = "mediatek,mt6797-uart",
 			     "mediatek,mt6577-uart";
@@ -389,6 +428,19 @@
 			 <&infrasys CLK_INFRA_AP_DMA>;
 		clock-names = "baud", "bus";
 		status = "disabled";
+	};
+
+	thermal: thermal@1100b000 {
+		#thermal-sensor-cells = <1>;
+		compatible = "mediatek,mt6797-thermal";
+		reg = <0 0x1100b000 0 0x1000>;
+		interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_LOW>;
+		clocks = <&infrasys CLK_INFRA_THERM>, <&infrasys CLK_INFRA_AUXADC>;
+		clock-names = "therm", "auxadc";
+		mediatek,auxadc = <&auxadc>;
+		mediatek,apmixedsys = <&apmixedsys>;
+		//nvmem-cells = <&thermal_calibration_data>;
+		//nvmem-cell-names = "calibration-data";
 	};
 
 	mmsys: mmsys_config@14000000 {
