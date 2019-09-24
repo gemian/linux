@@ -130,7 +130,7 @@ static int nvmem_cell_info_to_nvmem_cell(struct nvmem_device *nvmem,
 
 	if (!IS_ALIGNED(cell->offset, nvmem->stride)) {
 		dev_err(&nvmem->dev,
-			"cell %s unaligned to nvmem stride %d\n",
+			"[info] cell %s unaligned to nvmem stride %d\n",
 			cell->name, nvmem->stride);
 		return -EINVAL;
 	}
@@ -306,7 +306,7 @@ static int nvmem_add_cells_from_of(struct nvmem_device *nvmem)
 					BITS_PER_BYTE);
 
 		if (!IS_ALIGNED(cell->offset, nvmem->stride)) {
-			dev_err(dev, "cell %s unaligned to nvmem stride %d\n",
+			dev_err(dev, "[add] cell %s unaligned to nvmem stride %d\n",
 				cell->name, nvmem->stride);
 			/* Cells already added will be freed later. */
 			kfree_const(cell->name);
