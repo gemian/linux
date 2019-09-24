@@ -61,7 +61,7 @@
 			compatible = "mediatek,aw9120_led";
 		};
 
-		i2c0:i2c@11007000 {
+		i2c0: i2c@11007000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <0>;
 			reg = <0x11007000 0x1000>,
@@ -72,7 +72,7 @@
 			clock-div = <10>;
 		};
 
-		i2c1:i2c@11008000 {
+		i2c1: i2c@11008000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <1>;
 			reg = <0x11008000 0x1000>,
@@ -83,7 +83,7 @@
 			clock-div = <10>;
 		};
 
-		i2c2:i2c@11013000 {
+		i2c2: i2c@11013000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <2>;
 			reg = <0x11013000 0x1000>,
@@ -95,7 +95,7 @@
 			clock-div = <10>;
 		};
 
-		i2c3:i2c@11014000 {
+		i2c3: i2c@11014000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <3>;
 			reg = <0x11014000 0x1000>,
@@ -107,7 +107,7 @@
 			clock-div = <10>;
 		};
 
-		i2c4:i2c@11011000 {
+		i2c4: i2c@11011000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <4>;
 			reg = <0x11011000 0x1000>,
@@ -118,7 +118,7 @@
 			clock-div = <10>;
 		};
 
-		i2c5:i2c@1101c000 {
+		i2c5: i2c@1101c000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <5>;
 			reg = <0x1101c000 0x1000>,
@@ -129,7 +129,7 @@
 			clock-div = <10>;
 		};
 
-		i2c6:i2c@1100e000 {
+		i2c6: i2c@1100e000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <6>;
 			reg = <0x1100e000 0x1000>,
@@ -142,7 +142,7 @@
 		};
 
 /* Dissabled for now, needs rt5737
-		i2c7:i2c@11010000 {
+		i2c7: i2c@11010000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <7>;
 			reg = <0x11010000 0x1000>,
@@ -168,7 +168,7 @@
 			};
 		};
 */
-		i2c8:i2c@11009000 {
+		i2c8: i2c@11009000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <8>;
 			reg = <0x11009000 0x1000>,
@@ -181,7 +181,7 @@
 			mediatek,buffermode_used;
 		};
 
-		i2c9:i2c@1100d000 {
+		i2c9: i2c@1100d000 {
 			compatible = "mediatek,mt6797-i2c";
 			id = <9>;
 			reg = <0x1100d000 0x1000>,
@@ -194,62 +194,86 @@
 			mediatek,buffermode_used;
 		};
 
-		spi0:spi@1100a000 {
+		spi0: spi@1100a000 {
 			compatible = "mediatek,mt6797-spi";
 			cell-index = <0>;
-			spi-padmacro = <0>;
+			mediatek,pad-select = <0>;
 			reg = <0x1100a000 0x1000>;
 			interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_SPI>;
-			clock-names = "spi-main";
+			clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+					 <&topckgen CLK_TOP_MUX_SPI>,
+					 <&infrasys CLK_INFRA_SPI>;
+			clock-names = "parent-clk", "sel-clk", "spi-clk";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
 		};
 
-		spi2:spi@11018000 {
+		spi1: spi@11012000 {
+			compatible = "mediatek,mt6797-spi";
+			cell-index = <1>;
+			mediatek,pad-select = <1>;
+			reg = <0x11012000 0x1000>;
+			interrupts = <GIC_SPI 131 IRQ_TYPE_LEVEL_LOW>;
+			clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+					 <&topckgen CLK_TOP_MUX_SPI>,
+					 <&infrasys CLK_INFRA_SPI1>;
+			clock-names = "parent-clk", "sel-clk", "spi-clk";
+			clock-frequency = <109000000>;
+			clock-div = <1>;
+		};
+
+		spi2: spi@11018000 {
 			compatible = "mediatek,mt6797-spi";
 			cell-index = <2>;
-			spi-padmacro = <1>;
+			mediatek,pad-select = <1>;
 			reg = <0x11018000 0x1000>;
 			interrupts = <GIC_SPI 132 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_SPI2>;
-			clock-names = "spi-main";
+			clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+					 <&topckgen CLK_TOP_MUX_SPI>,
+					 <&infrasys CLK_INFRA_SPI2>;
+			clock-names = "parent-clk", "sel-clk", "spi-clk";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
 		};
 
-		spi3:spi@11019000 {
+		spi3: spi@11019000 {
 			compatible = "mediatek,mt6797-spi";
 			cell-index = <3>;
-			spi-padmacro = <0>;
+			mediatek,pad-select = <0>;
 			reg = <0x11019000 0x1000>;
 			interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_SPI3>;
-			clock-names = "spi-main";
+			clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+					 <&topckgen CLK_TOP_MUX_SPI>,
+					 <&infrasys CLK_INFRA_SPI3>;
+			clock-names = "parent-clk", "sel-clk", "spi-clk";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
 		};
 
-		spi4:spi@1101a000 {
+		spi4: spi@1101a000 {
 			compatible = "mediatek,mt6797-spi";
 			cell-index = <4>;
-			spi-padmacro = <0>;
+			mediatek,pad-select = <0>;
 			reg = <0x1101a000 0x1000>;
 			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_SPI4>;
-			clock-names = "spi-main";
+			clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+					 <&topckgen CLK_TOP_MUX_SPI>,
+					 <&infrasys CLK_INFRA_SPI4>;
+			clock-names = "parent-clk", "sel-clk", "spi-clk";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
 		};
 
-		spi5:spi@1101b000 {
+		spi5: spi@1101b000 {
 			compatible = "mediatek,mt6797-spi";
 			cell-index = <5>;
-			spi-padmacro = <0>;
+			mediatek,pad-select = <0>;
 			reg = <0x1101b000 0x1000>;
 			interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_SPI5>;
-			clock-names = "spi-main";
+			clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+					 <&topckgen CLK_TOP_MUX_SPI>,
+					 <&infrasys CLK_INFRA_SPI5>;
+			clock-names = "parent-clk", "sel-clk", "spi-clk";
 			clock-frequency = <109000000>;
 			clock-div = <1>;
 		};
@@ -615,4 +639,107 @@
 			output-low;
 		};
 	};
+
+	spi_pins_0: spi0{
+		pins_spi{
+			pinmux = <MT6797_GPIO58__FUNC_SPI0_MI>,
+				 <MT6797_GPIO60__FUNC_SPI0_CS>,
+				 <MT6797_GPIO59__FUNC_SPI0_MO>,
+				 <MT6797_GPIO57__FUNC_SPI0_CLK>;
+			bias-disable;
+		};
+	};
+
+	spi_pins_1: spi1{
+		pins_spi{
+			pinmux = <MT6797_GPIO40__FUNC_SPI1_MI_A>,
+				 <MT6797_GPIO41__FUNC_SPI1_CS_A>,
+				 <MT6797_GPIO42__FUNC_SPI1_MO_A>,
+				 <MT6797_GPIO39__FUNC_SPI1_CLK_A>;
+			bias-disable;
+		};
+	};
+
+	spi_pins_2: spi2{
+		pins_spi{
+			pinmux = <MT6797_GPIO44__FUNC_SPI2_MI_A>,
+				 <MT6797_GPIO45__FUNC_SPI2_CS_A>,
+				 <MT6797_GPIO46__FUNC_SPI2_MO_A>,
+				 <MT6797_GPIO43__FUNC_SPI2_CLK_A>;
+			bias-disable;
+		};
+	};
+
+	spi_pins_3: spi3{
+		pins_spi{
+			pinmux = <MT6797_GPIO250__FUNC_SPI3_MI>,
+				 <MT6797_GPIO253__FUNC_SPI3_CS>,
+				 <MT6797_GPIO251__FUNC_SPI3_MO>,
+				 <MT6797_GPIO252__FUNC_SPI3_CLK>;
+			bias-disable;
+		};
+	};
+
+	spi_pins_4: spi4{
+		pins_spi{
+			pinmux = <MT6797_GPIO52__FUNC_SPI4_MI_A>,
+				 <MT6797_GPIO53__FUNC_SPI4_CS_A>,
+				 <MT6797_GPIO54__FUNC_SPI4_MO_A>,
+				 <MT6797_GPIO51__FUNC_SPI4_CLK_A>;
+			bias-disable;
+		};
+	};
+
+	spi_pins_5: spi5{
+		pins_spi{
+			pinmux = <MT6797_GPIO29__FUNC_SPI5_MI_A>,
+				 <MT6797_GPIO32__FUNC_SPI5_CS_A>,
+				 <MT6797_GPIO33__FUNC_SPI5_MO_A>,
+				 <MT6797_GPIO28__FUNC_SPI5_CLK_A>;
+			bias-disable;
+		};
+	};
+};
+
+&spi0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_0>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_1>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+};
+
+&spi2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_2>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+};
+
+&spi3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_3>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+};
+
+&spi4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_4>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+};
+
+&spi5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_5>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+
 };
