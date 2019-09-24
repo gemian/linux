@@ -699,6 +699,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, master);
 	mdata->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(mdata->base)) {
+		dev_err(&pdev->dev, "failed to get base\n");
 		ret = PTR_ERR(mdata->base);
 		goto err_put_master;
 	}
