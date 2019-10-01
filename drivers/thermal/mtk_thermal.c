@@ -865,7 +865,7 @@ static int mtk_thermal_get_calibration_data(struct device *dev,
 
 	cell = nvmem_cell_get(dev, "calibration-data");
 	if (IS_ERR(cell)) {
-		dev_err(dev, "nvmem_cell_get failed (%d)\n", PTR_ERR(cell));
+		dev_err(dev, "nvmem_cell_get failed (%ld)\n", PTR_ERR(cell));
 		if (PTR_ERR(cell) == -EPROBE_DEFER)
 			return PTR_ERR(cell);
 		return 0;
@@ -876,12 +876,12 @@ static int mtk_thermal_get_calibration_data(struct device *dev,
 	nvmem_cell_put(cell);
 
 	if (IS_ERR(buf)) {
-		dev_err(dev, "nvmem_cell_read failed (%d)\n", PTR_ERR(buf));
+		dev_err(dev, "nvmem_cell_read failed (%ld)\n", PTR_ERR(buf));
 		return PTR_ERR(buf);
 	}
 
 	if (len < 3 * sizeof(u32)) {
-		dev_err(dev, "invalid calibration data (%d)\n", len);
+		dev_err(dev, "invalid calibration data (%lu)\n", len);
 		ret = -EINVAL;
 		goto out;
 	}
