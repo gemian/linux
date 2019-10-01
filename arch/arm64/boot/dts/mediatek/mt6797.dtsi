@@ -44,6 +44,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x000>;
+			#cooling-cells = <2>;
 		};
 
 		cpu1: cpu@1 {
@@ -51,6 +52,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x001>;
+			#cooling-cells = <2>;
 		};
 
 		cpu2: cpu@2 {
@@ -58,6 +60,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x002>;
+			#cooling-cells = <2>;
 		};
 
 		cpu3: cpu@3 {
@@ -65,6 +68,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x003>;
+			#cooling-cells = <2>;
 		};
 
 		cpu4: cpu@100 {
@@ -72,6 +76,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x100>;
+			#cooling-cells = <2>;
 		};
 
 		cpu5: cpu@101 {
@@ -79,6 +84,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x101>;
+			#cooling-cells = <2>;
 		};
 
 		cpu6: cpu@102 {
@@ -86,6 +92,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x102>;
+			#cooling-cells = <2>;
 		};
 
 		cpu7: cpu@103 {
@@ -93,6 +100,7 @@
 			compatible = "arm,cortex-a53";
 			enable-method = "psci";
 			reg = <0x103>;
+			#cooling-cells = <2>;
 		};
 
 		cpu8: cpu@200 {
@@ -100,6 +108,7 @@
 			compatible = "arm,cortex-a72";
 			enable-method = "psci";
 			reg = <0x200>;
+			#cooling-cells = <2>;
 		};
 
 		cpu9: cpu@201 {
@@ -107,6 +116,7 @@
 			compatible = "arm,cortex-a72";
 			enable-method = "psci";
 			reg = <0x201>;
+			#cooling-cells = <2>;
 		};
 	};
 
@@ -118,170 +128,52 @@
 	};
 
 	thermal-zones {
-		cpu_thermal0: cpu-thermal0 {
+		cpu_thermal: cpu-thermal {
 			polling-delay-passive = <1000>; /* milliseconds */
 			polling-delay = <1000>; /* milliseconds */
 
-			thermal-sensors = <&thermal 0>;
+			thermal-sensors = <&thermal>;
 			sustainable-power = <1500>; /* milliwatts */
 
 			trips {
-				threshold0: trip-point@0 {
+				threshold: trip-point@0 {
 					temperature = <68000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
 
-				target0: trip-point@1 {
+				target: trip-point@1 {
 					temperature = <85000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
 
-				cpu_crit0: cpu_crit@0 {
+				cpu_crit: cpu_crit@0 {
 					temperature = <115000>;
 					hysteresis = <2000>;
 					type = "critical";
 				};
 			};
-		};
 
-		cpu_thermal1: cpu-thermal1 {
-			polling-delay-passive = <1000>; /* milliseconds */
-			polling-delay = <1000>; /* milliseconds */
-
-			thermal-sensors = <&thermal 1>;
-			sustainable-power = <1500>; /* milliwatts */
-
-			trips {
-				threshold1: trip-point@0 {
-					temperature = <68000>;
-					hysteresis = <2000>;
-					type = "passive";
+			cooling-maps {
+				map@0 {
+					trip = <&target>;
+					cooling-device = <&cpu0 0 0>,
+							<&cpu1 0 0>,
+							<&cpu2 0 0>,
+							<&cpu3 0 0>;
 				};
-
-				target1: trip-point@1 {
-					temperature = <85000>;
-					hysteresis = <2000>;
-					type = "passive";
+				map@1 {
+					trip = <&target>;
+					cooling-device = <&cpu4 0 0>,
+							<&cpu5 0 0>,
+							<&cpu6 0 0>,
+							<&cpu7 0 0>;
 				};
-
-				cpu_crit1: cpu_crit@0 {
-					temperature = <115000>;
-					hysteresis = <2000>;
-					type = "critical";
-				};
-			};
-		};
-
-		cpu_thermal2: cpu-thermal2 {
-			polling-delay-passive = <1000>; /* milliseconds */
-			polling-delay = <1000>; /* milliseconds */
-
-			thermal-sensors = <&thermal 2>;
-			sustainable-power = <1500>; /* milliwatts */
-
-			trips {
-				threshold2: trip-point@0 {
-					temperature = <68000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				target2: trip-point@1 {
-					temperature = <85000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				cpu_crit2: cpu_crit@0 {
-					temperature = <115000>;
-					hysteresis = <2000>;
-					type = "critical";
-				};
-			};
-		};
-
-		cpu_thermal3: cpu-thermal3 {
-			polling-delay-passive = <1000>; /* milliseconds */
-			polling-delay = <1000>; /* milliseconds */
-
-			thermal-sensors = <&thermal 3>;
-			sustainable-power = <1500>; /* milliwatts */
-
-			trips {
-				threshold3: trip-point@0 {
-					temperature = <68000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				target3: trip-point@1 {
-					temperature = <85000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				cpu_crit3: cpu_crit@0 {
-					temperature = <115000>;
-					hysteresis = <2000>;
-					type = "critical";
-				};
-			};
-		};
-
-		cpu_thermal4: cpu-thermal4 {
-			polling-delay-passive = <1000>; /* milliseconds */
-			polling-delay = <1000>; /* milliseconds */
-
-			thermal-sensors = <&thermal 4>;
-			sustainable-power = <1500>; /* milliwatts */
-
-			trips {
-				threshold4: trip-point@0 {
-					temperature = <68000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				target4: trip-point@1 {
-					temperature = <85000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				cpu_crit4: cpu_crit@0 {
-					temperature = <115000>;
-					hysteresis = <2000>;
-					type = "critical";
-				};
-			};
-		};
-
-		cpu_thermal5: cpu-thermal5 {
-			polling-delay-passive = <1000>; /* milliseconds */
-			polling-delay = <1000>; /* milliseconds */
-
-			thermal-sensors = <&thermal 5>;
-			sustainable-power = <1500>; /* milliwatts */
-
-			trips {
-				threshold5: trip-point@0 {
-					temperature = <68000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				target5: trip-point@1 {
-					temperature = <85000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				cpu_crit5: cpu_crit@0 {
-					temperature = <115000>;
-					hysteresis = <2000>;
-					type = "critical";
+				map@2 {
+					trip = <&target>;
+					cooling-device = <&cpu8 0 0>,
+							<&cpu9 0 0>;
 				};
 			};
 		};
@@ -584,7 +476,7 @@
 	};
 
 	thermal: thermal@1100b000 {
-		#thermal-sensor-cells = <1>;
+		#thermal-sensor-cells = <0>;
 		compatible = "mediatek,mt6797-thermal";
 		reg = <0 0x1100b000 0 0x1000>;
 		interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_LOW>;
