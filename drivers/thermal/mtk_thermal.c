@@ -198,14 +198,8 @@ enum {
 #define MT7622_CALIBRATION	165
 
 /* MT6797 thermal sensors */
-typedef enum {
-	MT6797_TS_1     = 0,
-	MT6797_TS_2     = 1,
-	MT6797_TS_3     = 2,
-	MT6797_TS_4     = 3,
-	MT6797_TS_ABB   = 4,
-	MT6797_NUM_SENSORS
-} mt6797_thermal_sensor_id;
+#define MT6797_NUM_SENSORS 5
+#define MT6797_SENSORS_PER_BANK 2
 
 typedef enum {
 	MT6797_THERMAL_BANK0     = 0,
@@ -338,13 +332,7 @@ static const int mt8173_vts_index[MT8173_NUM_SENSORS] = {
 };
 
 /* MT6797 thermal sensor data */
-static const int mt6797_bank_data[MT6797_NUM_SENSORS][2] = {
-	{ MT6797_TS_1 },
-	{ MT6797_TS_4 },
-	{ MT6797_TS_2, MT6797_TS_3 },
-	{ MT6797_TS_2 },
-	{ MT6797_TS_2 },
-};
+static const int mt6797_bank_data[MT6797_SENSORS_PER_BANK] = { 0, 1 };
 
 static const int mt6797_vts_index[MT6797_NUM_SENSORS] = {
 	VTS1, VTS2, VTS3, VTS4, VTSABB
@@ -352,8 +340,8 @@ static const int mt6797_vts_index[MT6797_NUM_SENSORS] = {
 
 static const int mt6797_tc_offset[MT6797_NUM_CONTROLLER] = { 0x0, };
 
-static const int mt6797_msr[MT6797_NUM_SENSORS] = {
-	TEMP_MSR0, TEMP_MSR1, TEMP_MSR2, TEMP_MSR3, TEMP_MSR0
+static const int mt6797_msr[MT6797_SENSORS_PER_BANK] = {
+	TEMP_MSR0, TEMP_MSR1
 };
 
 static const int mt6797_adcpnp[MT6797_NUM_SENSORS] = {
@@ -527,22 +515,22 @@ static const struct mtk_thermal_data mt6797_thermal_data = {
 	.bank_data = {
 		{
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data[0],
+			.sensors = mt6797_bank_data,
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data[1],
+			.sensors = mt6797_bank_data,
 		}, {
 			.num_sensors = 2,
-			.sensors = mt6797_bank_data[2],
+			.sensors = mt6797_bank_data,
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data[3],
+			.sensors = mt6797_bank_data,
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data[4],
+			.sensors = mt6797_bank_data,
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data[5],
+			.sensors = mt6797_bank_data,
 		},
 	},
 	.msr = mt6797_msr,
@@ -858,7 +846,7 @@ static int mtk_thermal_get_calibration_data(struct device *dev,
 
 	/* Start with default values */
 	mt->adc_ge = 512;
-	for (i = 0; i < mt->conf->num_sensors; i++)
+	for (i = 0; i < MAX_NUM_VTS; i++)
 		mt->vts[i] = 260;
 	mt->degc_cali = 40;
 	mt->o_slope = 0;
@@ -994,8 +982,6 @@ static int mtk_thermal_probe(struct platform_device *pdev)
 	ret = mtk_thermal_get_calibration_data(&pdev->dev, mt);
 	if (ret) {
 		dev_err(&pdev->dev, "mtk_thermal_get_calibration_data failed (%d)\n", ret);
-		//Ignore failures for now use defaults
-		//return ret;
 	}
 
 	mutex_init(&mt->lock);
