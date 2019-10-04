@@ -60,7 +60,7 @@ static void print_bits(struct seq_file *seq, u32 val)
 void print_register(struct seq_file *seq, void * base,
 	const struct register_definition * def)
 {
-	const __iomem void * base_mapped;
+	__iomem void * base_mapped;
 	u32 val;
 	const struct register_field * field;
 
