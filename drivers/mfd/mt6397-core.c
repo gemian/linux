@@ -21,6 +21,9 @@
 #define MT6323_RTC_BASE		0x8000
 #define MT6323_RTC_SIZE		0x40
 
+#define MT6351_RTC_BASE		0x4000
+#define MT6351_RTC_SIZE		0x3e
+
 #define MT6397_RTC_BASE		0xe000
 #define MT6397_RTC_SIZE		0x3e
 
@@ -38,6 +41,11 @@
 static const struct resource mt6323_rtc_resources[] = {
 	DEFINE_RES_MEM(MT6323_RTC_BASE, MT6323_RTC_SIZE),
 	DEFINE_RES_IRQ(MT6323_IRQ_STATUS_RTC),
+};
+
+static const struct resource mt6351_rtc_resources[] = {
+	DEFINE_RES_MEM(MT6351_RTC_BASE, MT6351_RTC_SIZE),
+	DEFINE_RES_IRQ(RG_INT_STATUS_RTC),
 };
 
 static const struct resource mt6397_rtc_resources[] = {
@@ -86,6 +94,11 @@ static const struct mfd_cell mt6323_devs[] = {
 
 static const struct mfd_cell mt6351_devs[] = {
 	{
+		.name = "mt6351-rtc",
+		.num_resources = ARRAY_SIZE(mt6351_rtc_resources),
+		.resources = mt6351_rtc_resources,
+		.of_compatible = "mediatek,mt6351-rtc",
+	}, {
 		.name = "mt6351-regulator",
 		.of_compatible = "mediatek,mt6351-regulator"
 	}, {
@@ -204,7 +217,7 @@ static int mt6397_probe(struct platform_device *pdev)
 	case MT6351_CHIP_ID:
 		ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
 					   mt6351_devs, ARRAY_SIZE(mt6351_devs),
-					   NULL, 0, pmic->irq_gomain);
+					   NULL, 0, pmic->irq_domain);
 		dev_err(&pdev->dev, "supported chip: %d\n", ret);
 		break;
 
@@ -231,12 +244,10 @@ static int mt6397_probe(struct platform_device *pdev)
 static const struct of_device_id mt6397_of_match[] = {
 	{
 		.compatible = "mediatek,mt6323",
-		.data = &mt6323_core,
 	}, {
 		.compatible = "mediatek,mt6351",
 	}, {
 		.compatible = "mediatek,mt6397",
-		.data = &mt6397_core,
 	}, {
 		/* sentinel */
 	}

@@ -261,27 +261,27 @@ static int mtk_rtc_probe(struct platform_device *pdev)
 	struct mt6397_chip *mt6397_chip = dev_get_drvdata(pdev->dev.parent);
 	struct mt6397_rtc *rtc;
 	int ret;
-
+	dev_err(&pdev->dev, "[%s] 1\n",__func__);
 	rtc = devm_kzalloc(&pdev->dev, sizeof(struct mt6397_rtc), GFP_KERNEL);
 	if (!rtc)
 		return -ENOMEM;
-
+	dev_err(&pdev->dev, "[%s] 2\n",__func__);
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	rtc->addr_base = res->start;
-
+	dev_err(&pdev->dev, "[%s] 3\n",__func__);
 	rtc->irq = platform_get_irq(pdev, 0);
 	if (rtc->irq < 0)
 		return rtc->irq;
-
+	dev_err(&pdev->dev, "[%s] 4\n",__func__);
 	rtc->regmap = mt6397_chip->regmap;
 	mutex_init(&rtc->lock);
-
+	dev_err(&pdev->dev, "[%s] 5\n",__func__);
 	platform_set_drvdata(pdev, rtc);
-
+	dev_err(&pdev->dev, "[%s] 6\n",__func__);
 	rtc->rtc_dev = devm_rtc_allocate_device(&pdev->dev);
 	if (IS_ERR(rtc->rtc_dev))
 		return PTR_ERR(rtc->rtc_dev);
-
+	dev_err(&pdev->dev, "[%s] 7\n",__func__);
 	ret = devm_request_threaded_irq(&pdev->dev, rtc->irq, NULL,
 					mtk_rtc_irq_handler_thread,
 					IRQF_ONESHOT | IRQF_TRIGGER_HIGH,
@@ -292,9 +292,9 @@ static int mtk_rtc_probe(struct platform_device *pdev)
 			rtc->irq, ret);
 		return ret;
 	}
-
+	dev_err(&pdev->dev, "[%s] 8\n",__func__);
 	device_init_wakeup(&pdev->dev, 1);
-
+	dev_err(&pdev->dev, "[%s] 9\n",__func__);
 	rtc->rtc_dev->ops = &mtk_rtc_ops;
 
 	return rtc_register_device(rtc->rtc_dev);
@@ -327,6 +327,7 @@ static SIMPLE_DEV_PM_OPS(mt6397_pm_ops, mt6397_rtc_suspend,
 
 static const struct of_device_id mt6397_rtc_of_match[] = {
 	{ .compatible = "mediatek,mt6323-rtc", },
+	{ .compatible = "mediatek,mt6351-rtc", },
 	{ .compatible = "mediatek,mt6397-rtc", },
 	{ }
 };
