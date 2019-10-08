@@ -198,7 +198,7 @@ enum {
 #define MT7622_CALIBRATION	165
 
 /* MT6797 thermal sensors */
-#define MT6797_NUM_SENSORS 5
+#define MT6797_NUM_SENSORS 7
 #define MT6797_SENSORS_PER_BANK 2
 
 typedef enum {
@@ -332,23 +332,30 @@ static const int mt8173_vts_index[MT8173_NUM_SENSORS] = {
 };
 
 /* MT6797 thermal sensor data */
-static const int mt6797_bank_data[MT6797_SENSORS_PER_BANK] = { 0, 1 };
+static const int mt6797_bank_data[MT6797_THERMAL_NUM_BANKS][MT6797_SENSORS_PER_BANK] = {
+	{ 0, 0 },
+	{ 1, 0 },
+	{ 2, 3 },
+	{ 4, 0 },
+	{ 5, 0 },
+	{ 6, 0 },
+};
 
 static const int mt6797_vts_index[MT6797_NUM_SENSORS] = {
-	VTS1, VTS2, VTS3, VTS4, VTSABB
+	VTS1, VTS4, VTS2, VTS3, VTS2, VTS2, VTS2
 };
 
 static const int mt6797_tc_offset[MT6797_NUM_CONTROLLER] = { 0x0, };
 
-static const int mt6797_msr[MT6797_SENSORS_PER_BANK] = {
-	TEMP_MSR0, TEMP_MSR1
+static const int mt6797_msr[MT6797_NUM_SENSORS] = {
+	TEMP_MSR0, TEMP_MSR0, TEMP_MSR1, TEMP_MSR0, TEMP_MSR0, TEMP_MSR0, TEMP_MSR0
 };
 
 static const int mt6797_adcpnp[MT6797_NUM_SENSORS] = {
-	TEMP_ADCPNP0, TEMP_ADCPNP1, TEMP_ADCPNP2, TEMP_ADCPNP3, TEMP_ADCPNP0
+	TEMP_ADCPNP0, TEMP_ADCPNP0, TEMP_ADCPNP1, TEMP_ADCPNP0, TEMP_ADCPNP0, TEMP_ADCPNP0, TEMP_ADCPNP0
 };
 
-static const int mt6797_mux_values[MT6797_NUM_SENSORS] = { 0, 1, 2, 3, 16 };
+static const int mt6797_mux_values[MT6797_NUM_SENSORS] = { 0, 3, 1, 2, 1, 1, 1 };
 
 /* MT2701 thermal sensor data */
 static const int mt2701_bank_data[MT2701_NUM_SENSORS] = {
@@ -515,22 +522,22 @@ static const struct mtk_thermal_data mt6797_thermal_data = {
 	.bank_data = {
 		{
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data,
+			.sensors = mt6797_bank_data[0],
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data,
+			.sensors = mt6797_bank_data[1],
 		}, {
 			.num_sensors = 2,
-			.sensors = mt6797_bank_data,
+			.sensors = mt6797_bank_data[2],
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data,
+			.sensors = mt6797_bank_data[3],
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data,
+			.sensors = mt6797_bank_data[4],
 		}, {
 			.num_sensors = 1,
-			.sensors = mt6797_bank_data,
+			.sensors = mt6797_bank_data[5],
 		},
 	},
 	.msr = mt6797_msr,
@@ -673,7 +680,7 @@ static int mtk_thermal_bank_temperature(struct mtk_thermal_bank *bank)
 			    conf->msr[conf->bank_data[bank->id].sensors[i]]);
 
 		temp = raw_to_mcelsius(mt,
-				       conf->bank_data[bank->id].sensors[i],
+				       conf->vts_index[conf->bank_data[bank->id].sensors[i]],
 				       raw);
 
 		/*

@@ -8,8 +8,35 @@
 #include <linux/platform_device.h>
 #include <linux/nvmem-consumer.h>
 #include <linux/nvmem-provider.h>
-#include <linux/dma-mapping.h>
 
+struct readable_value {
+	u32 addr;
+	u32 value;
+};
+
+struct readable_value readable[] = {
+	{
+		.addr = 0x98,
+		.value = 0
+	},
+	{
+		.addr = 0x9c,
+		.value = 0
+	}
+};
+
+#define readl readl
+static u32 readl(const volatile void __iomem *addr) {
+	int i;
+	for (i=0; i < ARRAY_SIZE(readable); i++) {
+		if (readable[i].addr == (u32)addr) {
+			return readable[i].value;
+		}
+	}
+	return 0;
+}
+
+#include <linux/dma-mapping.h>
 #include "mtk_thermal.c"
 
 void __iomem *nvram_dest_ptr = NULL;
@@ -227,12 +254,14 @@ static void mtk_thermal_mt6797_calibration(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 229, mt.vts[2]);
 	KUNIT_EXPECT_EQ(test, 228, mt.vts[3]);
 	KUNIT_EXPECT_EQ(test, 260, mt.vts[4]);
-	KUNIT_EXPECT_EQ(test, 223, mt.vts[5]);
+	// VTSABB - even though we have a calibration value for this its not used on 6797 so doesn't get loaded so expect the default
+	KUNIT_EXPECT_EQ(test, 260, mt.vts[5]);
 }
 
 static void mtk_thermal_mt6797_temp_calculation(struct kunit *test)
 {
 	struct mtk_thermal mt;
+	struct mtk_thermal_bank mtb;
 	mt.conf = (void *)&mt6797_thermal_data;
 	mt.adc_ge = 613;
 	mt.degc_cali = 54;
@@ -264,33 +293,59 @@ static void mtk_thermal_mt6797_temp_calculation(struct kunit *test)
 	/*
 	 * Values from 3.18 GeminiPDA after enabling logging:
 	 * echo 1 > /proc/driver/thermal/tzcpu_log
-	 * Note: Change to use bank as index to vts values gives closer to expected values
-	 * Existing implementation is using sensor number
 	 */
 	// tscpu_thermal_read_bank_temp order 0 bank 0 type 0 tscpu_bank_ts 31400 tscpu_bank_ts_r 3565
-	KUNIT_EXPECT_LE(test, 31400, raw_to_mcelsius(&mt, 0, 3565));
-	KUNIT_EXPECT_GE(test, 31405, raw_to_mcelsius(&mt, 0, 3565));
+	KUNIT_EXPECT_LE(test, 31400, raw_to_mcelsius(&mt, mt.conf->vts_index[0], 3565));
+	KUNIT_EXPECT_GE(test, 31405, raw_to_mcelsius(&mt, mt.conf->vts_index[0], 3565));
+	KUNIT_EXPECT_EQ(test, 31403, raw_to_mcelsius(&mt, mt.conf->vts_index[0], 3565));
 
 	// tscpu_thermal_read_bank_temp order 0 bank 1 type 3 tscpu_bank_ts 27300 tscpu_bank_ts_r 3575
-	// 30213[0] 27595[1] 27476[2] 27357[3] 31165[4] 26762[5]
-	KUNIT_EXPECT_LE(test, 27300, raw_to_mcelsius(&mt, 1, 3575));
-	KUNIT_EXPECT_GE(test, 27600, raw_to_mcelsius(&mt, 1, 3575));
+	KUNIT_EXPECT_LE(test, 27300, raw_to_mcelsius(&mt, mt.conf->vts_index[1], 3575));
+	KUNIT_EXPECT_GE(test, 27400, raw_to_mcelsius(&mt, mt.conf->vts_index[1], 3575));
+	KUNIT_EXPECT_EQ(test, 27357, raw_to_mcelsius(&mt, mt.conf->vts_index[1], 3575));
 
 	//tscpu_thermal_read_bank_temp order 0 bank 2 type 1 tscpu_bank_ts 31900 tscpu_bank_ts_r 3538
-	//34616[0] 31998[1] 31879[2] 31760[3] 35568[4] 31165[5]
-	KUNIT_EXPECT_LE(test, 31850, raw_to_mcelsius(&mt, 2, 3538));
-	KUNIT_EXPECT_GE(test, 31900, raw_to_mcelsius(&mt, 2, 3538));
+	KUNIT_EXPECT_LE(test, 31900, raw_to_mcelsius(&mt, mt.conf->vts_index[2], 3538));
+	KUNIT_EXPECT_GE(test, 32000, raw_to_mcelsius(&mt, mt.conf->vts_index[2], 3538));
+	KUNIT_EXPECT_EQ(test, 31998, raw_to_mcelsius(&mt, mt.conf->vts_index[2], 3538));
 
 	////tscpu_thermal_read_bank_temp order 1 bank 2 type 2 tscpu_bank_ts 27500 tscpu_bank_ts_r 3574
-	//30332[0] 27714[1] 27595[2] 27476[3] 31284[4] 26881[5]
-	KUNIT_EXPECT_LE(test, 27500, raw_to_mcelsius(&mt, 2, 3574));
-	KUNIT_EXPECT_GE(test, 27600, raw_to_mcelsius(&mt, 2, 3574));
+	KUNIT_EXPECT_LE(test, 27500, raw_to_mcelsius(&mt, mt.conf->vts_index[3], 3574));
+	KUNIT_EXPECT_GE(test, 27600, raw_to_mcelsius(&mt, mt.conf->vts_index[3], 3574));
+	KUNIT_EXPECT_EQ(test, 27595, raw_to_mcelsius(&mt, mt.conf->vts_index[3], 3574));
 
-	//tscpu_thermal_read_bank_temp order 0 bank 3 type 1 tscpu_bank_ts 31500 tscpu_bank_ts_r 3541
-	//34259[0] 31641[1] 31522[2] 31403[3] 35211[4] 30808[5]
-	KUNIT_EXPECT_LE(test, 31400, raw_to_mcelsius(&mt, 3, 3541));
-	KUNIT_EXPECT_GE(test, 31500, raw_to_mcelsius(&mt, 3, 3541));
+	//tscpu_thermal_read_bank_temp order 0 bank 3 type 1 tscpu_bank_ts 32100 tscpu_bank_ts_r 3537
+	KUNIT_EXPECT_EQ(test, 32117, raw_to_mcelsius(&mt, mt.conf->vts_index[4], 3537));
+	//tscpu_thermal_read_bank_temp order 0 bank 4 type 1 tscpu_bank_ts 31900 tscpu_bank_ts_r 3538
+	KUNIT_EXPECT_EQ(test, 31998, raw_to_mcelsius(&mt, mt.conf->vts_index[5], 3538));
+	//tscpu_thermal_read_bank_temp order 0 bank 5 type 1 tscpu_bank_ts 32300 tscpu_bank_ts_r 3535
+	KUNIT_EXPECT_EQ(test, 32355, raw_to_mcelsius(&mt, mt.conf->vts_index[6], 3535));
 
+	mtb.mt = &mt;
+	mtb.id = 0;
+	readable[0].value = 3565;
+	KUNIT_EXPECT_EQ(test, 31403, mtk_thermal_bank_temperature(&mtb));
+
+	mtb.id = 1;
+	readable[0].value = 3565;
+	KUNIT_EXPECT_EQ(test, 28547, mtk_thermal_bank_temperature(&mtb));
+
+	mtb.id = 2;
+	readable[0].value = 3565;
+	readable[1].value = 3565;
+	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
+
+	mtb.id = 3;
+	readable[0].value = 3565;
+	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
+
+	mtb.id = 4;
+	readable[0].value = 3565;
+	KUNIT_EXPECT_EQ(test, 30213, mtk_thermal_bank_temperature(&mtb));
+
+	mtb.id = 5;
+	readable[0].value = 3565;
+	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
 }
 
 static struct kunit_case mtk_thermal_test_cases[] = {
