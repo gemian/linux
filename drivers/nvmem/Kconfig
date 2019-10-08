@@ -98,6 +98,12 @@ config MTK_EFUSE
 	  This driver can also be built as a module. If so, the module
 	  will be called efuse-mtk.
 
+config MTK_EFUSE_FOR_TEST
+    bool "Mediatek SoCs EFUSE testing support"
+    depends on !MTK_EFUSE
+	help
+	  This just enables ... to allow testing.
+
 config QCOM_QFPROM
 	tristate "QCOM QFPROM Support"
 	depends on ARCH_QCOM || COMPILE_TEST

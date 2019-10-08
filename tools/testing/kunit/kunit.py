@@ -35,7 +35,7 @@ def create_default_kunitconfig():
 		shutil.copyfile('arch/um/configs/kunit_defconfig',
 				kunit_kernel.kunitconfig_path)
 
-def run_tests(linux: kunit_kernel.LinuxSourceTree,
+def build_tests(linux: kunit_kernel.LinuxSourceTree,
 	      request: KunitRequest) -> KunitResult:
 	config_start = time.time()
 	success = linux.build_reconfig(request.build_dir)
@@ -48,15 +48,26 @@ def run_tests(linux: kunit_kernel.LinuxSourceTree,
 	build_start = time.time()
 	success = linux.build_um_kernel(request.jobs, request.build_dir)
 	build_end = time.time()
+
+	kunit_parser.print_with_timestamp((
+											  'Elapsed time: %.3fs configuring, %.3fs ' +
+											  'building\n') % (
+										  config_end - config_start,
+										  build_end - build_start))
+
 	if not success:
 		return KunitResult(KunitStatus.BUILD_FAILURE, 'could not build kernel')
+	else:
+		return KunitResult(KunitStatus.SUCCESS, '')
 
+def run_tests(linux: kunit_kernel.LinuxSourceTree,
+			  request: KunitRequest) -> KunitResult:
 	kunit_parser.print_with_timestamp('Starting KUnit Kernel ...')
 	test_start = time.time()
 
 	test_result = kunit_parser.TestResult(kunit_parser.TestStatus.SUCCESS,
-					      [],
-					      'Tests not Parsed.')
+										  [],
+										  'Tests not Parsed.')
 	if request.raw_output:
 		kunit_parser.raw_output(
 			linux.run_kernel(timeout=request.timeout,
@@ -67,13 +78,7 @@ def run_tests(linux: kunit_kernel.LinuxSourceTree,
 		test_result = kunit_parser.parse_run_tests(kunit_output)
 	test_end = time.time()
 
-	kunit_parser.print_with_timestamp((
-		'Elapsed time: %.3fs total, %.3fs configuring, %.3fs ' +
-		'building, %.3fs running\n') % (
-				test_end - config_start,
-				config_end - config_start,
-				build_end - build_start,
-				test_end - test_start))
+	kunit_parser.print_with_timestamp(('Elapsed time: %.3fs running\n') % (test_end - test_start))
 
 	if test_result.status != kunit_parser.TestStatus.SUCCESS:
 		return KunitResult(KunitStatus.TEST_FAILURE, test_result)
@@ -84,6 +89,34 @@ def main(argv, linux=None):
 	parser = argparse.ArgumentParser(
 			description='Helps writing and running KUnit tests.')
 	subparser = parser.add_subparsers(dest='subcommand')
+
+	build_parser = subparser.add_parser('build', help='Builds KUnit tests.')
+
+	build_parser.add_argument('--raw_output', help='don\'t format output from kernel',
+							action='store_true')
+
+	build_parser.add_argument('--timeout',
+							help='maximum number of seconds to allow for all tests '
+								 'to run. This does not include time taken to build the '
+								 'tests.',
+							type=int,
+							default=300,
+							metavar='timeout')
+
+
+	build_parser.add_argument('--jobs',
+							help='As in the make command, "Specifies  the number of '
+								 'jobs (commands) to run simultaneously."',
+							type=int, default=8, metavar='jobs')
+
+	build_parser.add_argument('--build_dir',
+							help='As in the make command, it specifies the build '
+								 'directory.',
+							type=str, default=None, metavar='build_dir')
+
+	build_parser.add_argument('--defconfig',
+							help='Uses a default kunitconfig.',
+							action='store_true')
 
 	run_parser = subparser.add_parser('run', help='Runs KUnit tests.')
 	run_parser.add_argument('--raw_output', help='don\'t format output from kernel',
@@ -113,6 +146,22 @@ def main(argv, linux=None):
 
 	cli_args = parser.parse_args(argv)
 
+	if cli_args.subcommand == 'build':
+		if cli_args.defconfig:
+			create_default_kunitconfig()
+
+		if not linux:
+			linux = kunit_kernel.LinuxSourceTree()
+
+		request = KunitRequest(cli_args.raw_output,
+							   cli_args.timeout,
+							   cli_args.jobs,
+							   cli_args.build_dir,
+							   cli_args.defconfig)
+		result = build_tests(linux, request)
+		if result.status != KunitStatus.SUCCESS:
+			sys.exit(1)
+
 	if cli_args.subcommand == 'run':
 		if cli_args.build_dir:
 			if not os.path.exists(cli_args.build_dir):
@@ -132,6 +181,9 @@ def main(argv, linux=None):
 				       cli_args.jobs,
 				       cli_args.build_dir,
 				       cli_args.defconfig)
+		result = build_tests(linux, request)
+		if result.status != KunitStatus.SUCCESS:
+			sys.exit(1)
 		result = run_tests(linux, request)
 		if result.status != KunitStatus.SUCCESS:
 			sys.exit(1)

@@ -380,6 +380,11 @@ config MTK_THERMAL
 	  Enable this option if you want to have support for thermal management
 	  controller present in Mediatek SoCs
 
+config MTK_THERMAL_TEST
+	bool "MediaTek thermal tests"
+	depends on KUNIT
+	depends on !MTK_THERMAL
+
 config AMLOGIC_THERMAL
 	tristate "Amlogic Thermal Support"
 	default ARCH_MESON

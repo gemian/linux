@@ -106,6 +106,10 @@ class LinuxSourceTree(object):
 		validated_kconfig = kunit_config.Kconfig()
 		validated_kconfig.read_from_file(kconfig_path)
 		if not self._kconfig.is_subset_of(validated_kconfig):
+			for entry in self._kconfig.entries():
+				if not entry in validated_kconfig.entries():
+					logging.error('not found')
+					logging.error(entry)
 			logging.error('Provided Kconfig is not contained in validated .config!')
 			return False
 		return True
