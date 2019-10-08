@@ -29,7 +29,7 @@ struct readable_value readable[] = {
 static u32 readl(const volatile void __iomem *addr) {
 	int i;
 	for (i=0; i < ARRAY_SIZE(readable); i++) {
-		if (readable[i].addr == (u32)addr) {
+		if (readable[i].addr == (uintptr_t)addr) {
 			return readable[i].value;
 		}
 	}
@@ -274,21 +274,21 @@ static void mtk_thermal_mt6797_temp_calculation(struct kunit *test)
 	mt.vts[5] = 223;
 	/*
 	 * Values from mainline code
-	 * Bank: 0, Sensor: 0, Raw: 36347, Temp: 29737
-	 * Bank: 1, Sensor: 0, Raw: 36343, Temp: 30213
-	 * Bank: 2, Sensor: 0, Raw: 36344, Temp: 30094
-	 * Bank: 2, Sensor: 1, Raw: 36333, Temp: 28785
-	 * Bank: 3, Sensor: 0, Raw: 36346, Temp: 29856
-	 * Bank: 4, Sensor: 0, Raw: 36347, Temp: 29737
-	 * Bank: 5, Sensor: 0, Raw: 36343, Temp: 30213
+	 * Bank: 0, Sensor i: 0, n: 0, raw: 36349, temp: 29499
+	 * Bank: 1, Sensor i: 0, n: 1, raw: 36339, temp: 27833
+	 * Bank: 2, Sensor i: 0, n: 2, raw: 36329, temp: 29261
+	 * Bank: 2, Sensor i: 1, n: 3, raw: 36337, temp: 28190
+	 * Bank: 3, Sensor i: 0, n: 4, raw: 36332, temp: 28904
+	 * Bank: 4, Sensor i: 0, n: 5, raw: 36333, temp: 28785
+	 * Bank: 5, Sensor i: 0, n: 6, raw: 36329, temp: 29261
 	 */
-	KUNIT_EXPECT_EQ(test, 29737, raw_to_mcelsius(&mt, 0, 36347));
-	KUNIT_EXPECT_EQ(test, 30213, raw_to_mcelsius(&mt, 0, 36343));
-	KUNIT_EXPECT_EQ(test, 30094, raw_to_mcelsius(&mt, 0, 36344));
-	KUNIT_EXPECT_EQ(test, 28785, raw_to_mcelsius(&mt, 1, 36333));
-	KUNIT_EXPECT_EQ(test, 29856, raw_to_mcelsius(&mt, 0, 36346));
-	KUNIT_EXPECT_EQ(test, 29737, raw_to_mcelsius(&mt, 0, 36347));
-	KUNIT_EXPECT_EQ(test, 30213, raw_to_mcelsius(&mt, 0, 36343));
+	KUNIT_EXPECT_EQ(test, 29499, raw_to_mcelsius(&mt, mt.conf->vts_index[0], 36349));
+	KUNIT_EXPECT_EQ(test, 27833, raw_to_mcelsius(&mt, mt.conf->vts_index[1], 36339));
+	KUNIT_EXPECT_EQ(test, 29261, raw_to_mcelsius(&mt, mt.conf->vts_index[2], 36329));
+	KUNIT_EXPECT_EQ(test, 28190, raw_to_mcelsius(&mt, mt.conf->vts_index[3], 36337));
+	KUNIT_EXPECT_EQ(test, 28904, raw_to_mcelsius(&mt, mt.conf->vts_index[4], 36332));
+	KUNIT_EXPECT_EQ(test, 28785, raw_to_mcelsius(&mt, mt.conf->vts_index[5], 36333));
+	KUNIT_EXPECT_EQ(test, 29261, raw_to_mcelsius(&mt, mt.conf->vts_index[6], 36329));
 
 	/*
 	 * Values from 3.18 GeminiPDA after enabling logging:
@@ -341,7 +341,7 @@ static void mtk_thermal_mt6797_temp_calculation(struct kunit *test)
 
 	mtb.id = 4;
 	readable[0].value = 3565;
-	KUNIT_EXPECT_EQ(test, 30213, mtk_thermal_bank_temperature(&mtb));
+	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
 
 	mtb.id = 5;
 	readable[0].value = 3565;
