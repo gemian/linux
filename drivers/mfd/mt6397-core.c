@@ -162,6 +162,26 @@ static int mt6397_irq_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(mt6397_pm_ops, mt6397_irq_suspend,
 			mt6397_irq_resume);
 
+struct chip_data {
+	u32 cid_addr;
+	u32 cid_shift;
+};
+
+static const struct chip_data mt6323_core = {
+	.cid_addr = MT6323_CID,
+	.cid_shift = 0,
+};
+
+static const struct chip_data mt6351_core = {
+	.cid_addr = MT6351_HWCID,
+	.cid_shift = 0,
+};
+
+static const struct chip_data mt6397_core = {
+	.cid_addr = MT6397_CID,
+	.cid_shift = 0,
+};
+
 static int mt6397_probe(struct platform_device *pdev)
 {
 	int ret;
@@ -244,10 +264,13 @@ static int mt6397_probe(struct platform_device *pdev)
 static const struct of_device_id mt6397_of_match[] = {
 	{
 		.compatible = "mediatek,mt6323",
+		.data = &mt6323_core,
 	}, {
 		.compatible = "mediatek,mt6351",
+		.data = &mt6351_core,
 	}, {
 		.compatible = "mediatek,mt6397",
+		.data = &mt6397_core,
 	}, {
 		/* sentinel */
 	}
