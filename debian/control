@@ -1,4 +1,4 @@
-Source: gemian-linux-kernel-5.3
+Source: gemian-linux-kernel
 Section: kernel
 Priority: extra
 Maintainer: Adam Boardman <adamboardman@gmail.com>
@@ -12,10 +12,10 @@ Build-Depends:
  flex,
  bison
 Standards-Version: 3.9.8
-Vcs-Git: https://github.com/gemian/gemian-linux-kernel-5.3.git
+Vcs-Git: https://github.com/gemian/linux.git
 Homepage: https://www.kernel.org/
 
-Package: gemian-linux-kernel-5.3
+Package: gemian-linux-kernel
 Architecture: any
 Multi-Arch: same
 Depends:

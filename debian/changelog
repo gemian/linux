@@ -1,4 +1,4 @@
-gemian-linux-kernel-5.3 (0.1) stretch; urgency=low
+gemian-linux-kernel (0.1) stretch; urgency=low
 
   * Experimenting with mainline kernels
   * Changes from Jasper Mattsson - https://github.com/Jasu/gemini-pda-buildroot
