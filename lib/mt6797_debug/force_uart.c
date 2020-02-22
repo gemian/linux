@@ -37,9 +37,9 @@
 
 void __init mt6797_debug_force_uart(void)
 {
-	void __iomem * usb = ioremap_nocache(SSUSB_SIF2SLV_U2PHY_BASE, 0x1000);
-	void __iomem * uart0 = ioremap_nocache(UART0_BASE, 0x1000);
-	void __iomem * gpio = ioremap_nocache(GPIO_BASE, 0x1000);
+	void __iomem * usb = ioremap(SSUSB_SIF2SLV_U2PHY_BASE, 0x1000);
+	void __iomem * uart0 = ioremap(UART0_BASE, 0x1000);
+	void __iomem * gpio = ioremap(GPIO_BASE, 0x1000);
 
 	// Android code sets some PMIC voltages here, we don't. Let's just
 	// hope that nothing gets fried.

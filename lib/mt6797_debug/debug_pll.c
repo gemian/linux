@@ -22,7 +22,7 @@ static int debug_pll_show(struct seq_file *seq, void *p)
 	    original_misc_cfg_0, readout, i;
 	static __iomem void *topckgen_base;
 
-	topckgen_base = ioremap_nocache(TOPCKGEN_BASE, TOPCKGEN_LENGTH);
+	topckgen_base = ioremap(TOPCKGEN_BASE, TOPCKGEN_LENGTH);
 
 	// Note: we are not doing mutual exclusion with clk/mediatek. This
 	// might blow up the device.

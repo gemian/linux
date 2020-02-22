@@ -64,7 +64,7 @@ void print_register(struct seq_file *seq, void * base,
 	u32 val;
 	const struct register_field * field;
 
-	base_mapped = ioremap_nocache((phys_addr_t)base, PAGE_SIZE);
+	base_mapped = ioremap((phys_addr_t)base, PAGE_SIZE);
 	val = readl(base_mapped + def->offset);
 
 	seq_printf(seq, "%s@%llx - %s: 0x%08x\n",
