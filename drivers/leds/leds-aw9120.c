@@ -427,8 +427,8 @@ static ssize_t aw9120_value_proc_write(struct file *filp, const char __user *buf
 	return count;
 }
 
-static const struct file_operations aw9120_value_proc_fops = { 
-	.write = aw9120_value_proc_write,
+static const struct proc_ops aw9120_value_proc_fops = {
+	.proc_write = aw9120_value_proc_write,
 };
 
 static ssize_t aw9120_reg_proc_read(struct file *file, char *buffer, size_t count, loff_t *ppos)
@@ -453,9 +453,9 @@ static ssize_t aw9120_reg_proc_write(struct file *filp, const char __user *buff,
 	return count;
 }
 
-static const struct file_operations aw9120_reg_proc_fops = { 
-	.read = aw9120_reg_proc_read,
-	.write = aw9120_reg_proc_write,
+static const struct proc_ops aw9120_reg_proc_fops = {
+	.proc_read = aw9120_reg_proc_read,
+	.proc_write = aw9120_reg_proc_write,
 };
 
 static ssize_t aw9120_operation_proc_write(struct file *filp, const char __user *buff, size_t count, loff_t *ppos)
@@ -473,8 +473,8 @@ static ssize_t aw9120_operation_proc_write(struct file *filp, const char __user 
 	return count;
 }
 
-static const struct file_operations aw9120_operation_proc_fops = { 
-	.write = aw9120_operation_proc_write,
+static const struct proc_ops aw9120_operation_proc_fops = {
+	.proc_write = aw9120_operation_proc_write,
 };
 
 /*************************proc end*********************************/
