@@ -22,6 +22,14 @@ struct readable_value readable[] = {
 	{
 		.addr = 0x9c,
 		.value = 0
+	},
+	{
+		.addr = 0x90,
+		.value = 0
+	},
+	{
+		.addr = 0x94,
+		.value = 0
 	}
 };
 
@@ -132,9 +140,14 @@ static struct platform_device *mtk_thermal_calibration_init(struct kunit *test, 
 	char* calib_value_32_buf;
 
 	base = kunit_kzalloc(test, sizeof(*base), GFP_KERNEL);
+	of_node_init(base);
 	efuse = kunit_kzalloc(test, sizeof(*efuse), GFP_KERNEL);
+	of_node_init(efuse);
 	thermal = kunit_kzalloc(test, sizeof(*thermal), GFP_KERNEL);
+	of_node_init(thermal);
 	thermal_calibration_data = kunit_kzalloc(test, sizeof(*thermal_calibration_data), GFP_KERNEL);
+	of_node_init(thermal_calibration_data);
+
 	efuse_compat = kunit_kzalloc(test, sizeof(*efuse_compat), GFP_KERNEL);
 	efuse_reg = kunit_kzalloc(test, sizeof(*efuse_reg), GFP_KERNEL);
 	nvmem_cells = kunit_kzalloc(test, sizeof(*nvmem_cells), GFP_KERNEL);
@@ -272,6 +285,7 @@ static void mtk_thermal_mt6797_temp_calculation(struct kunit *test)
 	mt.vts[3] = 228;
 	mt.vts[4] = 260;
 	mt.vts[5] = 223;
+	mt.thermal_base = 0;
 	/*
 	 * Values from mainline code
 	 * Bank: 0, Sensor i: 0, n: 0, raw: 36349, temp: 29499
@@ -322,29 +336,27 @@ static void mtk_thermal_mt6797_temp_calculation(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 32355, raw_to_mcelsius(&mt, mt.conf->vts_index[6], 3535));
 
 	mtb.mt = &mt;
-	mtb.id = 0;
 	readable[0].value = 3565;
+	readable[1].value = 3565;
+	readable[2].value = 3565;
+	readable[3].value = 3565;
+
+	mtb.id = 0;
 	KUNIT_EXPECT_EQ(test, 31403, mtk_thermal_bank_temperature(&mtb));
 
 	mtb.id = 1;
-	readable[0].value = 3565;
 	KUNIT_EXPECT_EQ(test, 28547, mtk_thermal_bank_temperature(&mtb));
 
 	mtb.id = 2;
-	readable[0].value = 3565;
-	readable[1].value = 3565;
 	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
 
 	mtb.id = 3;
-	readable[0].value = 3565;
 	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
 
 	mtb.id = 4;
-	readable[0].value = 3565;
 	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
 
 	mtb.id = 5;
-	readable[0].value = 3565;
 	KUNIT_EXPECT_EQ(test, 28785, mtk_thermal_bank_temperature(&mtb));
 }
 
