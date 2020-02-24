@@ -129,9 +129,9 @@ struct vibrator_hw *get_cust_vibrator_dtsi(void)
 void vibr_set_value(unsigned int value)
 {
 	struct vibrator_hw *hw = get_cust_vibrator_dtsi();
-	VIB_DEBUG("[%s] hw:%d\n", __func__, hw);
-	VIB_DEBUG("[%s] regmap: %d, data: %d\n", __func__, hw->regmap, hw->data);
-	VIB_DEBUG("[%s] regmap_update_bits(%d,%d,%d,%d)\n", __func__, hw->regmap, hw->data->en_addr,
+	VIB_DEBUG("[%s] hw:%p\n", __func__, (void*)hw);
+	VIB_DEBUG("[%s] regmap: %p, data: %p\n", __func__, (void*)hw->regmap, (void*)hw->data);
+	VIB_DEBUG("[%s] regmap_update_bits(%p,%d,%d,%d)\n", __func__, (void*)hw->regmap, hw->data->en_addr,
 			  hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
 	regmap_update_bits(hw->regmap, hw->data->en_addr,
 		hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
@@ -145,7 +145,6 @@ void vibr_set_value(unsigned int value)
 int init_cust_vibrator_dtsi(struct platform_device *pdev)
 {
 	int ret;
-	const struct mtk_vibr_data *data;
 	struct regmap *rm = NULL;
 	struct device *parent = pdev->dev.parent;
 
@@ -173,7 +172,6 @@ int init_cust_vibrator_dtsi(struct platform_device *pdev)
 		else
 			pvib_cust->vib_vol = 0x05;
 
-        data = (struct mtk_vibr_data*)of_device_get_match_data(&pdev->dev);
 		pvib_cust->data = (struct mtk_vibr_data*)of_device_get_match_data(&pdev->dev);
 
 		VIB_DEBUG("[%s] pvib_cust = %d, %d, %d\n", __func__, pvib_cust->vib_timer, pvib_cust->vib_limit, pvib_cust->vib_vol);
