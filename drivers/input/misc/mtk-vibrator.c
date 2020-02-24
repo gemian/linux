@@ -129,8 +129,10 @@ struct vibrator_hw *get_cust_vibrator_dtsi(void)
 void vibr_set_value(unsigned int value)
 {
 	struct vibrator_hw *hw = get_cust_vibrator_dtsi();
-	VIB_DEBUG("[%s] regmap_update_bits(%p,%d,%d,%d)\n", __func__, hw->regmap, hw->data->en_addr,
-              hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
+	VIB_DEBUG("[%s] hw:%d\n", __func__, hw);
+	VIB_DEBUG("[%s] regmap: %d, data: %d\n", __func__, hw->regmap, hw->data);
+	VIB_DEBUG("[%s] regmap_update_bits(%d,%d,%d,%d)\n", __func__, hw->regmap, hw->data->en_addr,
+			  hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
 	regmap_update_bits(hw->regmap, hw->data->en_addr,
 		hw->data->en_mask << hw->data->en_shift, value << hw->data->en_shift);
 }
