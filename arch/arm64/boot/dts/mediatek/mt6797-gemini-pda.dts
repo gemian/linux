@@ -61,6 +61,10 @@
 			compatible = "mediatek,aw9120_led";
 		};
 
+		bmi160: bmi160@68 {
+			compatible = "bosch,bmi160";
+		};
+
 		spi0: spi@1100a000 {
 			compatible = "mediatek,mt6797-spi";
 			cell-index = <0>;
@@ -483,6 +487,15 @@
 	pinctrl-1 = <&aw_pdn_high>;
 	pinctrl-2 = <&aw_pdn_low>;
 	status = "okay";
+};
+
+&bmi160 {
+	reg = <0 0x68>;
+
+	interrupt-parent = <&eintc>;
+	interrupts = <65 IRQ_TYPE_LEVEL_LOW>;
+	interrupt-names = "INT1";
+	//on 3.18 - ACCEL uses ALS@65, GYRO uses GYRO@67, this driver is so basic it only handles one interrupt
 };
 
 &pio {
