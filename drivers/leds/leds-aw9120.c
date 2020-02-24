@@ -576,18 +576,18 @@ static int aw9120_led_probe(struct platform_device *pdev)
 	
 	ret = aw9120_gpio_init(pdev);
 	if (ret != 0) {
-			dev_err(&pdev->dev, "[%s] failed to init aw9120 pinctrl.\n", __func__);
+		dev_err(&pdev->dev, "[%s] failed to init aw9120 pinctrl.\n", __func__);
 		return ret;
 	} else {
-			dev_err(&pdev->dev, "[%s] Success to init aw9120 pinctrl.\n", __func__);
+		dev_err(&pdev->dev, "[%s] Success to init aw9120 pinctrl.\n", __func__);
 	}
 	
 	ret = i2c_add_driver(&aw9120_i2c_driver);
 	if (ret != 0) {
-			dev_err(&pdev->dev, "[%s] failed to register aw9120 i2c driver.\n", __func__);
+		dev_err(&pdev->dev, "[%s] failed to register aw9120 i2c driver.\n", __func__);
 		return ret;
 	} else {
-			dev_err(&pdev->dev, "[%s] Success to register aw9120 i2c driver.\n", __func__);
+		dev_err(&pdev->dev, "[%s] Success to register aw9120 i2c driver.\n", __func__);
 	}
 
 	dev_err(&pdev->dev, "[%s] exit!\n", __func__);
