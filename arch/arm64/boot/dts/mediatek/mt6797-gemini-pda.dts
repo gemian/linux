@@ -61,139 +61,6 @@
 			compatible = "mediatek,aw9120_led";
 		};
 
-		i2c0: i2c@11007000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <0>;
-			reg = <0x11007000 0x1000>,
-				<0x11000100 0x80>;
-			interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C0>, <&infrasys CLK_INFRA_AP_DMA>;
-			clock-names = "main", "dma";
-			clock-div = <10>;
-		};
-
-		i2c1: i2c@11008000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <1>;
-			reg = <0x11008000 0x1000>,
-				<0x11000180 0x80>;
-			interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C1>, <&infrasys CLK_INFRA_AP_DMA>;
-			clock-names = "main", "dma";
-			clock-div = <10>;
-		};
-
-		i2c2: i2c@11013000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <2>;
-			reg = <0x11013000 0x1000>,
-				<0x11000400 0x80>;
-			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C2_IMM>, <&infrasys CLK_INFRA_AP_DMA>,
-						<&infrasys CLK_INFRA_I2C2_ARB>;
-			clock-names = "main", "dma", "arb";
-			clock-div = <10>;
-		};
-
-		i2c3: i2c@11014000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <3>;
-			reg = <0x11014000 0x1000>,
-				<0x11000480 0x80>;
-			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C3_IMM>, <&infrasys CLK_INFRA_AP_DMA>,
-						<&infrasys CLK_INFRA_I2C3_ARB>;
-			clock-names = "main", "dma", "arb";
-			clock-div = <10>;
-		};
-
-		i2c4: i2c@11011000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <4>;
-			reg = <0x11011000 0x1000>,
-				<0x11000300 0x80>;
-			interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C4>, <&infrasys CLK_INFRA_AP_DMA>;
-			clock-names = "main", "dma";
-			clock-div = <10>;
-		};
-
-		i2c5: i2c@1101c000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <5>;
-			reg = <0x1101c000 0x1000>,
-				<0x11000380 0x80>;
-			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C5>, <&infrasys CLK_INFRA_AP_DMA>;
-			clock-names = "main", "dma";
-			clock-div = <10>;
-		};
-
-		i2c6: i2c@1100e000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <6>;
-			reg = <0x1100e000 0x1000>,
-				<0x11000500 0x80>;
-			interrupts = <GIC_SPI 88 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C_APPM>, <&infrasys CLK_INFRA_AP_DMA>;
-			clock-names = "main", "dma";
-			clock-div = <10>;
-			mediatek,appm_used;
-		};
-
-/* Dissabled for now, needs rt5737
-		i2c7: i2c@11010000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <7>;
-			reg = <0x11010000 0x1000>,
-				<0x11000580 0x80>;
-			interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C_GPUPM>, <&infrasys CLK_INFRA_AP_DMA>;
-			clock-names = "main", "dma";
-			clock-div = <10>;
-			mediatek,gpupm_used;
-
-			rt5735@1c {
-				status = "ok";
-				compatible = "rt,rt5735-regulator";
-				reg = <0x1c>;
-				//rt,pgdvs;
-				//rt,pgdcdc;
-				rt,dvs_up = <0x6>;
-				rt,dvs_down = <0x1>;
-				//rt,dvs_mode;
-				rt,ioc = <0x1>;
-				rt,tpwth = <0x2>;
-				rt,rearm;
-			};
-		};
-*/
-		i2c8: i2c@11009000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <8>;
-			reg = <0x11009000 0x1000>,
-				<0x11000200 0x80>;
-			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C2>, <&infrasys CLK_INFRA_AP_DMA>,
-						<&infrasys CLK_INFRA_I2C2_ARB>;
-			clock-names = "main", "dma", "arb";
-			clock-div = <10>;
-			mediatek,buffermode_used;
-		};
-
-		i2c9: i2c@1100d000 {
-			compatible = "mediatek,mt6797-i2c";
-			id = <9>;
-			reg = <0x1100d000 0x1000>,
-				<0x11000280 0x80>;
-			interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_LOW>;
-			clocks = <&infrasys CLK_INFRA_I2C3>, <&infrasys CLK_INFRA_AP_DMA>,
-						<&infrasys CLK_INFRA_I2C3_ARB>;
-			clock-names = "main", "dma", "arb";
-			clock-div = <10>;
-			mediatek,buffermode_used;
-		};
-
 		spi0: spi@1100a000 {
 			compatible = "mediatek,mt6797-spi";
 			cell-index = <0>;
@@ -564,53 +431,51 @@
 
 &i2c0 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_0>;
+	pinctrl-0 = <&i2c0_pins_a>;
 	status = "okay";
 };
 
 &i2c1 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_1>;
+	pinctrl-0 = <&i2c1_pins_a>;
 	status = "okay";
 };
 
 &i2c2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_2>;
+	pinctrl-0 = <&i2c2_pins_a>;
 	status = "okay";
 };
 
 &i2c3 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_3>;
+	pinctrl-0 = <&i2c3_pins_a>;
 	status = "okay";
 };
 
 &i2c4 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_4>;
+	pinctrl-0 = <&i2c4_pins_a>;
 	status = "okay";
 };
 
 &i2c5 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_5>;
+	pinctrl-0 = <&i2c5_pins_a>;
 	status = "okay";
 };
 
 &i2c6 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_6>;
+	pinctrl-0 = <&i2c6_pins_a>;
 	status = "okay";
 };
 
-/* Dissabled for now, needs rt5737
 &i2c7 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins_7>;
+	pinctrl-0 = <&i2c7_pins_a>;
 	status = "okay";
 };
-*/
 
 &aw9120 {
 	pinctrl-names = "aw9120_default", "aw9120_pdn_high", "aw9120_pdn_low";
